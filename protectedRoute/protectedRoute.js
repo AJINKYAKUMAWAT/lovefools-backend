@@ -6,7 +6,7 @@ function authenticateToken(req, res, next) {
 
     if (token == null) return res.sendStatus(403); // If no token is present, return forbidden
 
-    jwt.verify(token, process.env.secretKey, (err, user) => {
+    jwt.verify(token, process.env.SECRETKEY, (err, user) => {
         if (err) return res.sendStatus(403); // If token is invalid, return forbidden
         req.user = user; // Attach the user object to the request
         next(); // Pass the execution to the next middleware or route
