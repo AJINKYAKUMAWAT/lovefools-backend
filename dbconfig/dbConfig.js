@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
+console.log(process.env.DATABASE_URL);
+
 const dbConnection = () => {
   try {
     mongoose
-      .connect(
-        "mongodb+srv://Ganesh:LoveFools@cluster0.l5cec9x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/LoveFools"
-      )
-      // .connect("mongodb://localhost:27017/")
+      .connect(process.env.DATABASE_URL)
       .then(() => {
         console.log("connection successfully run");
       })
