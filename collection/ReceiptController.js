@@ -12,7 +12,7 @@ const AddReceiptData = async (req, res) => {
     res.status(201).json({ StatusCode: 201, data: savedReceipt._id });
   } catch (error) {
     // Handle any errors during the process
-    res.status(500).json({ message: "Error adding receipt", error });
+    res.status(500).json({ message: "Error adding receipt", esrror });
   }
 };
 
@@ -48,25 +48,36 @@ const UpdateReceiptData = async (req, res) => {
 
 const GetReceiptsList = async (req, res) => {
   try {
-    // Extract query parameters for sorting, limiting, and searching
-    const sortBy = req.body.sortBy || "createdAt"; // Default sorting field
-    const sortOrder =
-      req.body.sortOrder === "desc" ? -1 : req.body.sortOrder === "asc" ? 1 : 1; // Default sorting order
-    const limit = parseInt(req.body.limit, 10) || 10; // Default limit
-    const searchKey = req.body.searchKey || ""; // Search key for filtering by receipt_Name
+    const sortBy = req.query.sortBy || "createdAt"; 
+    const sortOrder = parseInt(req.query.sortOrder, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10; 
+    const page = parseInt(req.query.page, 10) || 1;
+    const searchKey = req.query.search || ""; 
 
-    // Build query object
     const query = searchKey
       ? { receipt_Name: { $regex: searchKey, $options: "i" } }
       : {};
 
-    // Retrieve and sort receipts from the database
-    const receipts = await ReceiptSchema.find(query)
-      .sort({ [sortBy]: sortOrder }) // Sort by specified field and order
-      .limit(limit); // Limit the number of results
+      console.log(query);
+      
 
-    // Respond with the list of receipts
-    res.status(200).json({ StatusCode: 200, data: receipts });
+    const totalReceipts = await ReceiptSchema.countDocuments(query);
+
+    const receipts = await ReceiptSchema.find(query)
+      .collation({ locale: "en", strength: 2 }) 
+      .sort({ [sortBy]: sortOrder })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).json({
+      StatusCode: 200,
+      data: receipts,
+      pageData: {
+        total: totalReceipts, 
+        page: page, 
+        limit: limit, 
+      },
+    });
   } catch (error) {
     // Log the error for debugging
     console.error("Error retrieving receipts:", error);
@@ -78,5 +89,10 @@ const GetReceiptsList = async (req, res) => {
     });
   }
 };
+
+
+
+
+
 
 module.exports = { AddReceiptData, UpdateReceiptData, GetReceiptsList };
