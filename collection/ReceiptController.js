@@ -54,14 +54,9 @@ const GetReceiptsList = async (req, res) => {
     const page = parseInt(req.body.page, 10) || 1;
     const searchKey = req.body.searchKey || "";
 
-    console.log(req.body, "req.query");
-
     const query = searchKey
       ? { receipt_Name: { $regex: searchKey, $options: "i" } }
       : {};
-
-    console.log(query);
-
     const totalReceipts = await ReceiptSchema.countDocuments(query);
 
     const receipts = await ReceiptSchema.find(query)
