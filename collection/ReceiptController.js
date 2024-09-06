@@ -48,23 +48,22 @@ const UpdateReceiptData = async (req, res) => {
 
 const GetReceiptsList = async (req, res) => {
   try {
-    const sortBy = req.query.sortBy || "createdAt"; 
+    const sortBy = req.query.sortBy || "createdAt";
     const sortOrder = parseInt(req.query.sortOrder, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 10; 
+    const limit = parseInt(req.query.limit, 10) || 10;
     const page = parseInt(req.query.page, 10) || 1;
-    const searchKey = req.query.search || ""; 
+    const searchKey = req.query.search || "";
 
     const query = searchKey
       ? { receipt_Name: { $regex: searchKey, $options: "i" } }
       : {};
 
-      console.log(query);
-      
+    console.log(query);
 
     const totalReceipts = await ReceiptSchema.countDocuments(query);
 
     const receipts = await ReceiptSchema.find(query)
-      .collation({ locale: "en", strength: 2 }) 
+      .collation({ locale: "en", strength: 2 })
       .sort({ [sortBy]: sortOrder })
       .skip((page - 1) * limit)
       .limit(limit);
@@ -73,9 +72,9 @@ const GetReceiptsList = async (req, res) => {
       StatusCode: 200,
       data: receipts,
       pageData: {
-        total: totalReceipts, 
-        page: page, 
-        limit: limit, 
+        total: totalReceipts,
+        page: page,
+        limit: limit,
       },
     });
   } catch (error) {
@@ -90,9 +89,46 @@ const GetReceiptsList = async (req, res) => {
   }
 };
 
+const DeleteReceipt = async (req, res) => {
+  try {
+    const receiptId = req.query.receiptId; // Accessing the query parameter from the URL
 
+    if (!receiptId) {
+      return res
+        .status(400)
+        .json({ StatusCode: 400, message: "Receipt ID is required" });
+    }
 
+    // Attempt to delete the receipt by its ID
+    const deletedReceipt = await ReceiptSchema.findByIdAndDelete(receiptId);
 
+    if (!deletedReceipt) {
+      // If no receipt was found, respond with a 404 status code
+      return res
+        .status(404)
+        .json({ StatusCode: 404, message: "Receipt not found" });
+    }
 
+    // Respond with success if the receipt was deleted
+    res.status(200).json({
+      StatusCode: 200,
+      message: "Receipt deleted successfully",
+      data: deletedReceipt,
+    });
+  } catch (error) {
+    // Log and respond with any errors
+    console.error("Error deleting receipt:", error);
+    res.status(500).json({
+      StatusCode: 500,
+      message: "Error deleting receipt",
+      error: error.message || "Unknown error",
+    });
+  }
+};
 
-module.exports = { AddReceiptData, UpdateReceiptData, GetReceiptsList };
+module.exports = {
+  AddReceiptData,
+  UpdateReceiptData,
+  GetReceiptsList,
+  DeleteReceipt,
+};

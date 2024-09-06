@@ -8,6 +8,7 @@ const {
   AddReceiptData,
   UpdateReceiptData,
   GetReceiptsList,
+  DeleteReceipt,
 } = require("../collection/ReceiptController");
 const upload = require("../Aws/UploadPhoto");
 const authenticateToken = require("../protectedRoute/protectedRoute");
@@ -21,6 +22,8 @@ router.get("/protected", TokenVerification);
 router.post("/addReceipt", authenticateToken, AddReceiptData);
 router.post("/updateReceipt", authenticateToken, UpdateReceiptData);
 router.post("/getReceiptList", authenticateToken, GetReceiptsList);
+router.get("/deleteReceipt", authenticateToken, DeleteReceipt);
+
 // router.post("/upload", upload.single("photo"), (req, res) => {
 //   res.send("File uploaded successfully to " + req.file.location);
 // });
