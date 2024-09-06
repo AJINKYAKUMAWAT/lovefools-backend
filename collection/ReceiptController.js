@@ -48,11 +48,13 @@ const UpdateReceiptData = async (req, res) => {
 
 const GetReceiptsList = async (req, res) => {
   try {
-    const sortBy = req.query.sortBy || "createdAt";
-    const sortOrder = parseInt(req.query.sortOrder, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 10;
-    const page = parseInt(req.query.page, 10) || 1;
-    const searchKey = req.query.search || "";
+    const sortBy = req.body.sortBy || "createdAt";
+    const sortOrder = parseInt(req.body.sortOrder, 10) || 1;
+    const limit = parseInt(req.body.limit, 10) || 10;
+    const page = parseInt(req.body.page, 10) || 1;
+    const searchKey = req.body.searchKey || "";
+
+    console.log(req.body, "req.query");
 
     const query = searchKey
       ? { receipt_Name: { $regex: searchKey, $options: "i" } }
