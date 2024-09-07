@@ -18,7 +18,7 @@ const AddReceiptData = async (req, res) => {
 
 const UpdateReceiptData = async (req, res) => {
   try {
-    const receiptId = req.query.receiptId;
+    const receiptId = req.params.receiptId;
 
     // Check if receiptId is provided
     if (!receiptId) {
@@ -52,7 +52,7 @@ const GetReceiptsList = async (req, res) => {
     const sortOrder = parseInt(req.body.sortOrder, 10) || 1;
     const limit = parseInt(req.body.limit, 10) || 10;
     const page = parseInt(req.body.page, 10) || 1;
-    const searchKey = req.body.searchKey || "";
+    const searchKey = req.body.search || "";
 
     const query = searchKey
       ? { receipt_Name: { $regex: searchKey, $options: "i" } }
@@ -88,7 +88,7 @@ const GetReceiptsList = async (req, res) => {
 
 const DeleteReceipt = async (req, res) => {
   try {
-    const receiptId = req.query.receiptId; // Accessing the query parameter from the URL
+    const receiptId = req.params.receiptId; // Accessing the query parameter from the URL
 
     if (!receiptId) {
       return res

@@ -20,9 +20,9 @@ router.get("/protected", TokenVerification);
 
 //Receipt module
 router.post("/addReceipt", authenticateToken, AddReceiptData);
-router.post("/updateReceipt", authenticateToken, UpdateReceiptData);
+router.post("/updateReceipt/:receiptId", authenticateToken, UpdateReceiptData);
 router.post("/getReceiptList", authenticateToken, GetReceiptsList);
-router.get("/deleteReceipt", authenticateToken, DeleteReceipt);
+router.post("/deleteReceipt/:receiptId", authenticateToken, DeleteReceipt);
 
 // router.post("/upload", upload.single("photo"), (req, res) => {
 //   res.send("File uploaded successfully to " + req.file.location);
