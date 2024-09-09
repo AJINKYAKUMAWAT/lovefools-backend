@@ -12,16 +12,16 @@ const AddUserInformationData = async (req, res) => {
     res.status(201).json({ StatusCode: 201, data: savedUserInformation._id });
   } catch (error) {
     // Handle any errors during the process
-    res.status(500).json({ message: "Error adding receipt", esrror });
+    res.status(500).json({ message: "Error adding receipt", error });
   }
 };
 
 const UpdateUserInformationData = async (req, res) => {
   try {
-    const receiptId = req.params.receiptId;
+    const userId = req.params.userId;
 
-    // Check if receiptId is provided
-    if (!receiptId) {
+    // Check if userId is provided
+    if (!userId) {
       return res
         .status(400)
         .json({ message: "UserInformation ID is required" });
@@ -29,7 +29,7 @@ const UpdateUserInformationData = async (req, res) => {
 
     // Update the receipt with the new data from the request body
     const updatedUserInformation = await UserInformationSchema.findOneAndUpdate(
-      { _id: receiptId }, // Query to find the receipt by ID
+      { _id: userId }, // Query to find the receipt by ID
       req.body
     );
 
@@ -70,10 +70,10 @@ const GetUserInformationList = async (req, res) => {
       .limit(limit);
 
     res.status(200).json({
-      StatusCode: 200,
+      StatusCode: 200,  
       data: receipts,
       pageData: {
-        total: totalUserInformations,
+        total: totalUserInformation,
         page: page,
         limit: limit,
       },
@@ -92,9 +92,9 @@ const GetUserInformationList = async (req, res) => {
 
 const DeleteUserInformation = async (req, res) => {
   try {
-    const receiptId = req.params.receiptId; // Accessing the query parameter from the URL
+    const userId = req.params.userId; // Accessing the query parameter from the URL
 
-    if (!receiptId) {
+    if (!userId) {
       return res
         .status(400)
         .json({ StatusCode: 400, message: "UserInformation ID is required" });
@@ -102,7 +102,7 @@ const DeleteUserInformation = async (req, res) => {
 
     // Attempt to delete the receipt by its ID
     const deletedUserInformation =
-      await UserInformationSchema.findByIdAndDelete(receiptId);
+      await UserInformationSchema.findByIdAndDelete(userId);
 
     if (!deletedUserInformation) {
       // If no receipt was found, respond with a 404 status code

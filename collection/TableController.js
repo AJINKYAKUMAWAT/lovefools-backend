@@ -18,16 +18,16 @@ const AddTableData = async (req, res) => {
 
 const UpdateTableData = async (req, res) => {
   try {
-    const receiptId = req.params.receiptId;
+    const tableId = req.params.tableId;
 
-    // Check if receiptId is provided
-    if (!receiptId) {
+    // Check if tableId is provided
+    if (!tableId) {
       return res.status(400).json({ message: "Table ID is required" });
     }
 
     // Update the receipt with the new data from the request body
     const updatedTable = await TableSchema.findOneAndUpdate(
-      { _id: receiptId }, // Query to find the receipt by ID
+      { _id: tableId }, // Query to find the receipt by ID
       req.body
     );
 
@@ -88,16 +88,16 @@ const GetTablesList = async (req, res) => {
 
 const DeleteTable = async (req, res) => {
   try {
-    const receiptId = req.params.receiptId; // Accessing the query parameter from the URL
+    const tableId = req.params.tableId; // Accessing the query parameter from the URL    
 
-    if (!receiptId) {
+    if (!tableId) {
       return res
         .status(400)
         .json({ StatusCode: 400, message: "Table ID is required" });
     }
 
     // Attempt to delete the receipt by its ID
-    const deletedTable = await TableSchema.findByIdAndDelete(receiptId);
+    const deletedTable = await TableSchema.findByIdAndDelete(tableId);
 
     if (!deletedTable) {
       // If no receipt was found, respond with a 404 status code
