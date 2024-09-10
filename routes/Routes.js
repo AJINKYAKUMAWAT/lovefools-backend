@@ -69,9 +69,9 @@ router.post(
 
 //Table module
 router.post("/addEvent", authenticateToken, AddEventData);
-router.post("/updateEvent/:userId", authenticateToken, UpdateEventData);
+router.post("/updateEvent/:eventId", authenticateToken, UpdateEventData);
 router.post("/getEventList", authenticateToken, GetEventsList);
-router.post("/deleteEvent/:userId", authenticateToken, DeleteEvent);
+router.post("/deleteEvent/:eventId", authenticateToken, DeleteEvent);
 // router.post("/upload", upload.single("photo"), (req, res) => {
 //   res.send("File uploaded successfully to " + req.file.location);
 // });
