@@ -22,6 +22,13 @@ const {
   GetUserInformationList,
   DeleteUserInformation,
 } = require("../collection/UserInformation");
+
+const {
+  AddEventData,
+  UpdateEventData,
+  GetEventsList,
+  DeleteEvent,
+} = require("../collection/EventController");
 const upload = require("../Aws/UploadPhoto");
 const authenticateToken = require("../protectedRoute/protectedRoute");
 const router = express.Router();
@@ -59,6 +66,12 @@ router.post(
   authenticateToken,
   DeleteUserInformation
 );
+
+//Table module
+router.post("/addEvent", authenticateToken, AddEventData);
+router.post("/updateEvent/:userId", authenticateToken, UpdateEventData);
+router.post("/getEventList", authenticateToken, GetEventsList);
+router.post("/deleteEvent/:userId", authenticateToken, DeleteEvent);
 // router.post("/upload", upload.single("photo"), (req, res) => {
 //   res.send("File uploaded successfully to " + req.file.location);
 // });
