@@ -29,6 +29,24 @@ const {
   GetEventsList,
   DeleteEvent,
 } = require("../collection/EventController");
+const {
+  AddGalleryData,
+  UpdateGalleryData,
+  GetGalleryList,
+  DeleteGallery,
+} = require("../collection/GalleryController");
+const {
+  AddTestimonialData,
+  UpdateTestimonialData,
+  GetTestimonialList,
+  DeleteTestimonial,
+} = require("../collection/TestimonialController");
+const {
+  AddCMSData,
+  UpdateCMSData,
+  GetCMSList,
+  DeleteCMS,
+} = require("../collection/CMSController");
 const upload = require("../Aws/UploadPhoto");
 const authenticateToken = require("../protectedRoute/protectedRoute");
 const router = express.Router();
@@ -72,6 +90,30 @@ router.post("/addEvent", authenticateToken, AddEventData);
 router.post("/updateEvent/:eventId", authenticateToken, UpdateEventData);
 router.post("/getEventList", authenticateToken, GetEventsList);
 router.post("/deleteEvent/:eventId", authenticateToken, DeleteEvent);
+
+//Gallery module
+router.post("/addGallery", authenticateToken, AddGalleryData);
+router.post("/updateGallery/:galleryId", authenticateToken, UpdateGalleryData);
+router.post("/getGalleryList", authenticateToken, GetGalleryList);
+router.post("/deleteGallery/:galleryId", authenticateToken, DeleteGallery);
+
+//Testimonial module
+router.post("/addTestimonial", authenticateToken, AddTestimonialData);
+router.post(
+  "/updateTestimonial/:testimonialId",
+  authenticateToken,
+  UpdateTestimonialData
+);
+router.post("/getTestimonialList", authenticateToken, GetTestimonialList);
+router.post(
+  "/deleteTestimonial/:testimonialId",
+  authenticateToken,
+  DeleteTestimonial
+);
+router.post("/addCMS", authenticateToken, AddCMSData);
+router.post("/updateCMS/:CMDId", authenticateToken, UpdateCMSData);
+router.post("/getCMSList", authenticateToken, GetCMSList);
+
 // router.post("/upload", upload.single("photo"), (req, res) => {
 //   res.send("File uploaded successfully to " + req.file.location);
 // });
