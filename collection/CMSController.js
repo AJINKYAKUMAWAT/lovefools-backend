@@ -18,16 +18,19 @@ const AddCMSData = async (req, res) => {
 
 const UpdateCMSData = async (req, res) => {
   try {
-    const CMSId = req.params.CMSId;
+    const CMDId = req.params.CMDId;
 
-    // Check if CMSId is provided
-    if (!CMSId) {
+    console.log(req.params);
+    
+
+    // Check if CMDId is provided
+    if (!CMDId) {
       return res.status(400).json({ message: "CMS ID is required" });
     }
 
     // Update the event with the new data from the request body
     const updatedCMS = await CMSSchema.findOneAndUpdate(
-      { _id: CMSId }, // Query to find the event by ID
+      { _id: CMDId }, // Query to find the event by ID
       req.body
     );
 

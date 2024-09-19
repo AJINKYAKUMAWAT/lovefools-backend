@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const TestimonialSchema = new mongoose.Schema({
-  gallery_Name: { type: String, required: true },
+  testimonial_Name: { type: String, required: true },
   description: { type: String, required: true },
   photo: { type: String },
   created_date: { type: Date, default: Date.now }, // Correct type and set default value

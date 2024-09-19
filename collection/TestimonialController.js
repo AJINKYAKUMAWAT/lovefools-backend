@@ -1,4 +1,4 @@
-const TestimonialSchema = require("../schema/Gallary");
+const TestimonialSchema = require("../schema/Testimonial");
 
 const AddTestimonialData = async (req, res) => {
   try {
@@ -55,7 +55,7 @@ const GetTestimonialList = async (req, res) => {
     const searchKey = req.body.search || "";
 
     const query = searchKey
-      ? { event_Name: { $regex: searchKey, $options: "i" } }
+      ? { testimonial_Name: { $regex: searchKey, $options: "i" } }
       : {};
     const totalTestimonial = await TestimonialSchema.countDocuments(query);
 

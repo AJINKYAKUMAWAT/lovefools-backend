@@ -55,7 +55,7 @@ const GetGalleryList = async (req, res) => {
     const searchKey = req.body.search || "";
 
     const query = searchKey
-      ? { event_Name: { $regex: searchKey, $options: "i" } }
+      ? { gallery_Name: { $regex: searchKey, $options: "i" } }
       : {};
     const totalGallery = await GallerySchema.countDocuments(query);
 
