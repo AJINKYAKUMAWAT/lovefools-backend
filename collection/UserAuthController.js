@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const UserLogin = require("../schema/UserLogin");
-
+const secretKey = "ghjik567ujisdhyui567ujh56yuhnjl";
 const Register = async (req, res) => {
   const { username, password } = req.body;
 
@@ -35,16 +35,12 @@ const Login = async (req, res) => {
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    const accessToken = jwt.sign(
-      { username: user.username },
-      process.env.secretKey,
-      { expiresIn: "1h" }
-    );
-    const refreshToken = jwt.sign(
-      { username: user.username },
-      process.env.secretKey,
-      { expiresIn: "1h" }
-    );
+    const accessToken = jwt.sign({ username: user.username }, secretKey, {
+      expiresIn: "1h",
+    });
+    const refreshToken = jwt.sign({ username: user.username }, secretKey, {
+      expiresIn: "1h",
+    });
     res.json({ accessToken, refreshToken });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error });
