@@ -1,27 +1,63 @@
-const AWS = require("aws-sdk");
 const multer = require("multer");
-const multerS3 = require("multer-s3");
+const path = require("path");
+const fs = require("fs");
 
-// Configure AWS with your access and secret key.
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID, // Your Access Key ID
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY, // Your Secret Access Key
-  region: process.env.AWS_REGION, // Your AWS Region
+// Define storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Path to store files
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const id = req.body.id || req.params.id; // Get the ID from body or params
+    cb(null, file.fieldname + "-" + id + "-" + Date.now() + ext); // Create file name with ID
+  },
 });
 
-const s3 = new AWS.S3();
+// File filter to allow only specific types (images and videos)
+const fileFilter = (req, file, cb) => {
+  console.log("Uploaded file:", file); // Log the file details
+  const fileTypes = /jpeg|jpg|png|gif|mp4|avi|mkv/;
+  const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+  const mimeType = fileTypes.test(file.mimetype);
+  if (mimeType && extname) {
+    return cb(null, true);
+  } else {
+    cb(new Error("Only images and videos are allowed"));
+  }
+};
 
-// Set up multer and configure the storage option using multerS3
-const uploadPhoto = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: "your-bucket-name", // Your bucket name
-    acl: "public-read", // Set permissions
-    key: function (req, file, cb) {
-      cb(null, Date.now().toString() + "-" + file.originalname); // File name to be saved in S3
-    },
-  }),
+// Initialize the upload middleware
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
 });
 
-// Export the upload middleware for use in your routes
-module.exports = uploadPhoto;
+// Middleware to handle file replacement
+const replaceFileIfExists = (req, res, next) => {
+  const id = req.body.id || req.params.id;
+  const existingFilePath = path.join(__dirname, "uploads", `file-${id}-*`); // Adjust filename pattern
+
+  // Use fs.readdir to check for existing files matching the ID
+  fs.readdir("uploads/", (err, files) => {
+    if (err) return next(err);
+
+    // Filter files to find any that match the pattern
+    const existingFiles = files.filter((file) => file.includes(`-${id}-`));
+
+    // Delete existing files
+    existingFiles.forEach((file) => {
+      fs.unlink(path.join("uploads/", file), (err) => {
+        if (err) console.error(`Error deleting file: ${file}`, err);
+      });
+    });
+
+    next();
+  });
+};
+
+// Export the upload middleware and replacement function
+module.exports = {
+  upload,
+  replaceFileIfExists,
+};

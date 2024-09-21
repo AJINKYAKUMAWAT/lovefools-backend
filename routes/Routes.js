@@ -1,4 +1,5 @@
 const express = require("express");
+
 const {
   Register,
   Login,
@@ -47,8 +48,13 @@ const {
   GetCMSList,
   DeleteCMS,
 } = require("../collection/CMSController");
-const upload = require("../Aws/UploadPhoto");
+const { upload, replaceFileIfExists } = require("../Aws/UploadPhoto");
+// const uploadPhoto = require("../Aws/UploadPhoto");
 const authenticateToken = require("../protectedRoute/protectedRoute");
+// const upload = multer({
+//   storage: storage,
+//   fileFilter: fileFilter,
+// });
 const router = express.Router();
 
 router.post("/register", Register);
@@ -113,6 +119,15 @@ router.post(
 router.post("/addCMS", authenticateToken, AddCMSData);
 router.post("/updateCMS/:CMDId", authenticateToken, UpdateCMSData);
 router.post("/getCMSList", authenticateToken, GetCMSList);
+// Route to upload a photo with an ID in the URL
+router.post(
+  "/upload/:id",
+  replaceFileIfExists,
+  upload.single("file"),
+  (req, res) => {
+    res.send("File uploaded successfully");
+  }
+);
 
 // router.post("/upload", upload.single("photo"), (req, res) => {
 //   res.send("File uploaded successfully to " + req.file.location);
