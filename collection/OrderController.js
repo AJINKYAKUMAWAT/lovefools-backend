@@ -33,25 +33,63 @@ const changeStatusOrder = async (req, res) => {
     }
 
     // Update only the status field of the document
-    const updatedCMS = await CMSSchema.findOneAndUpdate(
+    const updatedOrder = await OrderSchema.findOneAndUpdate(
       { _id: OrderId }, // Query to find the document by ID
       { status: req.body.status }, // Update only the status field
       { new: true } // Return the updated document
     );
 
     // If the document is not found, return a 404 response
-    if (!updatedCMS) {
+    if (!updatedOrder) {
       return res
         .status(404)
-        .json({ StatusCode: 404, message: "CMS not found" });
+        .json({ StatusCode: 404, message: "Order not found" });
     }
 
     // Respond with the updated document data
-    res.status(200).json({ StatusCode: 200, data: updatedCMS });
+    res.status(200).json({ StatusCode: 200, data: updatedOrder });
   } catch (error) {
     // Handle any errors during the process
     res.status(500).json({ message: "Error updating status", error });
   }
 };
+const GetOrderList = async (req, res) => {
+  try {
+    const sortBy = req.body.sortBy || "createdAt";
+    const sortOrder = parseInt(req.body.sortOrder, 10) || 1;
+    const limit = parseInt(req.body.limit, 10) || 10;
+    const page = parseInt(req.body.page, 10) || 1;
+    const searchKey = req.body.search || "";
 
-module.exports = { AddOrderData, changeStatusOrder };
+    const query = searchKey
+      ? { customer_name: { $regex: searchKey, $options: "i" } }
+      : {};
+    const totalOrder = await OrderSchema.countDocuments(query);
+
+    const events = await OrderSchema.find(query)
+      .collation({ locale: "en", strength: 2 })
+      .sort({ [sortBy]: sortOrder })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).json({
+      StatusCode: 200,
+      data: events,
+      pageData: {
+        total: totalOrder,
+        page: page,
+        limit: limit,
+      },
+    });
+  } catch (error) {
+    // Log the error for debugging
+    console.error("Error retrieving events:", error);
+
+    // Respond with a detailed error message
+    res.status(500).json({
+      message: "Error retrieving events",
+      error: error.message || "Unknown error",
+    });
+  }
+};
+module.exports = { AddOrderData, changeStatusOrder, GetOrderList };

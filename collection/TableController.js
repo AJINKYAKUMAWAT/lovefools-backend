@@ -55,7 +55,7 @@ const GetTablesList = async (req, res) => {
     const searchKey = req.body.search || "";
 
     const query = searchKey
-      ? { receipt_Name: { $regex: searchKey, $options: "i" } }
+      ? { table_number: { $regex: searchKey, $options: "i" } }
       : {};
     const totalTables = await TableSchema.countDocuments(query);
 
@@ -88,7 +88,7 @@ const GetTablesList = async (req, res) => {
 
 const DeleteTable = async (req, res) => {
   try {
-    const tableId = req.params.tableId; // Accessing the query parameter from the URL    
+    const tableId = req.params.tableId; // Accessing the query parameter from the URL
 
     if (!tableId) {
       return res

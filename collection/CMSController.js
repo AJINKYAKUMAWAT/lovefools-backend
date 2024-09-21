@@ -21,7 +21,6 @@ const UpdateCMSData = async (req, res) => {
     const CMDId = req.params.CMDId;
 
     console.log(req.params);
-    
 
     // Check if CMDId is provided
     if (!CMDId) {
@@ -58,7 +57,7 @@ const GetCMSList = async (req, res) => {
     const searchKey = req.body.search || "";
 
     const query = searchKey
-      ? { event_Name: { $regex: searchKey, $options: "i" } }
+      ? { section_Name: { $regex: searchKey, $options: "i" } }
       : {};
     const totalCMS = await CMSSchema.countDocuments(query);
 

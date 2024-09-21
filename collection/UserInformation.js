@@ -57,7 +57,7 @@ const GetUserInformationList = async (req, res) => {
     const searchKey = req.body.search || "";
 
     const query = searchKey
-      ? { receipt_Name: { $regex: searchKey, $options: "i" } }
+      ? { name: { $regex: searchKey, $options: "i" } }
       : {};
     const totalUserInformation = await UserInformationSchema.countDocuments(
       query
@@ -70,7 +70,7 @@ const GetUserInformationList = async (req, res) => {
       .limit(limit);
 
     res.status(200).json({
-      StatusCode: 200,  
+      StatusCode: 200,
       data: receipts,
       pageData: {
         total: totalUserInformation,

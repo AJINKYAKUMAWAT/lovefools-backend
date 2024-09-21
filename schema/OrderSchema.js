@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema({
+  customer_name: { type: String, required: true },
   seatCount: { type: String, required: true },
   date: { type: String, required: true },
   payment: { type: Number, required: true }, // Consider changing to Number if appropriate
