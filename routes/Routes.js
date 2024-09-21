@@ -48,7 +48,7 @@ const {
   GetCMSList,
   DeleteCMS,
 } = require("../collection/CMSController");
-const { upload, replaceFileIfExists } = require("../Aws/UploadPhoto");
+const { upload, replaceFileIfExists, getPhoto } = require("../Aws/UploadPhoto");
 // const uploadPhoto = require("../Aws/UploadPhoto");
 const authenticateToken = require("../protectedRoute/protectedRoute");
 // const upload = multer({
@@ -128,7 +128,7 @@ router.post(
     res.send("File uploaded successfully");
   }
 );
-
+router.get("/file/:id", getPhoto);
 // router.post("/upload", upload.single("photo"), (req, res) => {
 //   res.send("File uploaded successfully to " + req.file.location);
 // });

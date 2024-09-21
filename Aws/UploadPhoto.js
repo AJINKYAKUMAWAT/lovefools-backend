@@ -56,8 +56,33 @@ const replaceFileIfExists = (req, res, next) => {
   });
 };
 
+const getPhoto = (req, res) => {
+  const id = req.params.id;
+  const filePath = path.join(__dirname, "../uploads"); // Path to uploads directory
+
+  // Check for files matching the ID
+  fs.readdir(filePath, (err, files) => {
+    if (err) {
+      return res.status(500).json({ message: "Unable to read directory" });
+    }
+
+    const matchedFiles = files.filter((file) => file.includes(`-${id}-`)); // Adjust as necessary
+
+    if (matchedFiles.length === 0) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    // Send the file path or serve the file
+    const fileToSend = path.join(filePath, matchedFiles[0]); // Send the first matched file
+    res.json({
+      message: "File retrieved successfully",
+      filePath: fileToSend, // Return the file path
+    });
+  });
+};
 // Export the upload middleware and replacement function
 module.exports = {
   upload,
   replaceFileIfExists,
+  getPhoto,
 };
