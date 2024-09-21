@@ -51,6 +51,10 @@ const {
 const { upload, replaceFileIfExists, getPhoto } = require("../Aws/UploadPhoto");
 // const uploadPhoto = require("../Aws/UploadPhoto");
 const authenticateToken = require("../protectedRoute/protectedRoute");
+const {
+  AddOrderData,
+  changeStatusOrder,
+} = require("../collection/OrderController");
 // const upload = multer({
 //   storage: storage,
 //   fileFilter: fileFilter,
@@ -129,6 +133,8 @@ router.post(
   }
 );
 router.get("/file/:id", getPhoto);
+router.get("/getOrder", AddOrderData);
+router.get("/UpdateOrder", changeStatusOrder);
 // router.post("/upload", upload.single("photo"), (req, res) => {
 //   res.send("File uploaded successfully to " + req.file.location);
 // });
