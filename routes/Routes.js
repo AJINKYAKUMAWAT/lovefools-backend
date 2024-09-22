@@ -55,6 +55,12 @@ const {
   AddOrderData,
   changeStatusOrder,
 } = require("../collection/OrderController");
+const {
+  AddContactData,
+  DeleteContact,
+  UpdateContactData,
+  GetContactList,
+} = require("../collection/ContactController");
 // const upload = multer({
 //   storage: storage,
 //   fileFilter: fileFilter,
@@ -133,8 +139,15 @@ router.post(
   }
 );
 router.get("/file/:id", getPhoto);
+
 router.get("/getOrder", AddOrderData);
 router.get("/UpdateOrder", changeStatusOrder);
+
+router.post("/addContact", authenticateToken, AddContactData);
+router.post("/updateContact/:ContactId", authenticateToken, UpdateContactData);
+router.post("/getContactList", authenticateToken, GetContactList);
+router.post("/deleteContact/:ContactId", authenticateToken, DeleteContact);
+
 // router.post("/upload", upload.single("photo"), (req, res) => {
 //   res.send("File uploaded successfully to " + req.file.location);
 // });
