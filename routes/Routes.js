@@ -143,7 +143,7 @@ router.get("/file/:id", getPhoto);
 router.get("/getOrder", AddOrderData);
 router.get("/UpdateOrder", changeStatusOrder);
 
-router.post("/addContact", authenticateToken, AddContactData);
+router.post("/addContact", AddContactData);
 router.post("/updateContact/:ContactId", authenticateToken, UpdateContactData);
 router.post("/getContactList", authenticateToken, GetContactList);
 router.post("/deleteContact/:ContactId", authenticateToken, DeleteContact);
