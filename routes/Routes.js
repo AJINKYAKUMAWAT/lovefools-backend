@@ -132,12 +132,13 @@ router.post("/getCMSList", authenticateToken, GetCMSList);
 // Route to upload a photo with an ID in the URL
 router.post(
   "/upload/:id",
+  upload.single("file"), // Move this above replaceFileIfExists
   replaceFileIfExists,
-  upload.single("file"),
   (req, res) => {
     res.send("File uploaded successfully");
   }
 );
+
 router.get("/file/:id", getPhoto);
 
 router.get("/getOrder", AddOrderData);

@@ -1,6 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const mongoose = require("mongoose");
 
 // Define storage
 const storage = multer.diskStorage({
@@ -33,27 +34,48 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-// Middleware to handle file replacement
-const replaceFileIfExists = (req, res, next) => {
+const replaceFileIfExists = async (req, res, next) => {
   const id = req.body.id || req.params.id;
-  const existingFilePath = path.join(__dirname, "uploads", `file-${id}-*`); // Adjust filename pattern
+  console.log("ID received:", id);
+  console.log("Request Body:", req.body);
+  console.log("Uploaded File:", req.file);
 
-  // Use fs.readdir to check for existing files matching the ID
-  fs.readdir("uploads/", (err, files) => {
-    if (err) return next(err);
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded." });
+  }
 
-    // Filter files to find any that match the pattern
+  try {
+    const files = await fs.promises.readdir("uploads/");
+    console.log("Files in uploads directory:", files);
+
+    // Filter files matching the ID
     const existingFiles = files.filter((file) => file.includes(`-${id}-`));
+    console.log("Existing files matching the ID:", existingFiles);
 
-    // Delete existing files
-    existingFiles.forEach((file) => {
-      fs.unlink(path.join("uploads/", file), (err) => {
-        if (err) console.error(`Error deleting file: ${file}`, err);
-      });
+    const db = mongoose.connection.db;
+    console.log("Database connection successful, querying collections");
+    const collections = await db.listCollections().toArray();
+    console.log("Collections retrieved:", collections);
+
+    const updatePromises = collections.map(async (collection) => {
+      const model = db.collection(collection.name);
+      const filePath = `uploads/${req.file.filename}`;
+      console.log(
+        `Updating collection ${collection.name} with file path ${filePath}`
+      );
+
+      await model.updateMany({ id: id }, { $set: { photo: filePath } });
     });
 
+    await Promise.all(updatePromises);
+    console.log("All collections updated successfully");
     next();
-  });
+  } catch (err) {
+    console.error("Error:", err);
+    return res
+      .status(500)
+      .json({ message: err.message || "An error occurred" });
+  }
 };
 
 const getPhoto = (req, res) => {
@@ -80,6 +102,7 @@ const getPhoto = (req, res) => {
     });
   });
 };
+
 // Export the upload middleware and replacement function
 module.exports = {
   upload,
