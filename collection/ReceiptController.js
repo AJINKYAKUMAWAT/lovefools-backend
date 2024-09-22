@@ -12,7 +12,7 @@ const AddReceiptData = async (req, res) => {
     res.status(201).json({ StatusCode: 201, data: savedReceipt._id });
   } catch (error) {
     // Handle any errors during the process
-    res.status(500).json({ message: "Error adding receipt", esrror });
+    res.status(500).json({ message: "Error adding receipt", error });
   }
 };
 
