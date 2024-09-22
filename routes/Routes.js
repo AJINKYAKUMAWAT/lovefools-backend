@@ -114,7 +114,7 @@ router.post(
   authenticateToken,
   UpdateTestimonialData
 );
-router.post("/getTestimonialList", authenticateToken, GetTestimonialList);
+router.post("/getTestimonialList", GetTestimonialList);
 router.post(
   "/deleteTestimonial/:testimonialId",
   authenticateToken,
