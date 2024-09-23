@@ -6,7 +6,10 @@ const mongoose = require("mongoose");
 // Ensure uploads directory exists
 const ensureUploadsDir = async () => {
   try {
-    await fs.mkdir("C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads", { recursive: true });
+    await fs.mkdir(
+      "C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads",
+      { recursive: true }
+    );
   } catch (err) {
     console.error("Error creating uploads directory:", err);
   }
@@ -15,7 +18,10 @@ const ensureUploadsDir = async () => {
 // Define storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/"); // Path to store files
+    cb(
+      null,
+      "C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/"
+    ); // Path to store files
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
@@ -52,7 +58,7 @@ const upload = multer({
 //   try {
 //     await ensureUploadsDir();
 //     const uploadsPath = "C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/";
-    
+
 //     // Read files in the uploads directory
 //     const files = await fs.readdir(uploadsPath);
 
@@ -67,7 +73,7 @@ const upload = multer({
 
 //     // The new file is already saved by multer in the correct location
 //     const newFilePath = `uploads/${req.file.filename}`;
-    
+
 //     const db = mongoose.connection.db;
 //     const collections = await db.listCollections().toArray();
 
@@ -104,6 +110,17 @@ const upload = multer({
 //   }
 // };
 
+// Utility function to extract file extension
+const getFileExtension = (filename) => {
+  return filename.split(".").pop().toLowerCase(); // Get the part after the last dot and make it lowercase
+};
+
+// Utility function to check if the file is a video based on its extension
+const isVideoFile = (extension) => {
+  const videoExtensions = ["mp4", "avi", "mov", "mkv", "flv", "wmv", "webm"];
+  return videoExtensions.includes(extension);
+};
+
 const replaceFileIfExists = async (req, res, next) => {
   const id = req.body.id || req.params.id;
 
@@ -115,11 +132,19 @@ const replaceFileIfExists = async (req, res, next) => {
     // Ensure uploads directory exists
     await ensureUploadsDir();
 
-    // Read files in the uploads directory
-    const files = await fs.readdir("C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/");
+    // Path to your uploads directory
+    const uploadsDir =
+      "C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/";
 
-    // The new file is already saved by multer in the correct location
-    const newFilePath = `C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/${req.file.filename}`;
+    // Read files in the uploads directory
+    const files = await fs.readdir(uploadsDir);
+
+    // Extract the extension of the new file
+    const newFileExtension = getFileExtension(req.file.filename);
+    const newFilePath = `${uploadsDir}${req.file.filename}`;
+
+    // Determine if the new file is a video
+    const isVideo = isVideoFile(newFileExtension);
 
     const db = mongoose.connection.db;
     const collections = await db.listCollections().toArray();
@@ -129,9 +154,14 @@ const replaceFileIfExists = async (req, res, next) => {
       const model = db.collection(collection.name);
       const objectId = new mongoose.Types.ObjectId(id);
 
+      // Set the appropriate field based on whether the file is a video
+      const fieldToUpdate = isVideo
+        ? { video: newFilePath }
+        : { photo: newFilePath };
+
       const updatedPhoto = await model.findOneAndUpdate(
         { _id: objectId },
-        { $set: { photo: newFilePath } }, // Update with new file path
+        { $set: fieldToUpdate }, // Update with the correct field (video or photo)
         { returnDocument: "after" } // Returns the updated document
       );
 
@@ -144,15 +174,27 @@ const replaceFileIfExists = async (req, res, next) => {
 
     await Promise.all(updatePromises);
 
-    // Filter out the new file from the files array
+    // Filter out the new file from the files array and ensure the extension matches
     const existingFiles = files.filter((file) => {
       // Check if the file matches the current ID and is not the newly uploaded file
-      return file.includes(`-${id}-`) && file !== req.file.filename;
+      const existingFileExtension = getFileExtension(file);
+      return (
+        file.includes(`-${id}-`) &&
+        file !== req.file.filename &&
+        existingFileExtension === newFileExtension // Ensure extensions match
+      );
     });
+
+    if (existingFiles.length === 0) {
+      return res.status(400).json({
+        StatusCode: 400,
+        message: "No existing files with the same extension to replace.",
+      });
+    }
 
     // Delete existing files
     const deletePromises = existingFiles.map((file) =>
-      fs.unlink(path.join("C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/", file)).catch((err) => {
+      fs.unlink(path.join(uploadsDir, file)).catch((err) => {
         console.error(`Error deleting file: ${file}`, err);
       })
     );
@@ -162,7 +204,9 @@ const replaceFileIfExists = async (req, res, next) => {
     // Send response after all tasks are completed
     res.status(200).json({
       StatusCode: 200,
-      message: "Photos updated successfully.",
+      message: isVideo
+        ? "Video updated successfully."
+        : "Photo updated successfully.",
       file: {
         name: req.file.filename,
         path: newFilePath,
@@ -174,12 +218,13 @@ const replaceFileIfExists = async (req, res, next) => {
     console.error("Error:", err);
     return res
       .status(500)
-      .json({ message: err.message || "An error occurred" });
-  }
+      .json({ message: err.message || "An error occurred" });
+  }
 };
 const getPhoto = async (req, res) => {
   const id = req.params.id;
-  const uploadsPath = "C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/";
+  const uploadsPath =
+    "C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/";
 
   try {
     const files = await fs.readdir(uploadsPath);
