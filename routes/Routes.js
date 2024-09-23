@@ -104,7 +104,7 @@ router.post(
 //Table module
 router.post("/addEvent", authenticateToken, AddEventData);
 router.post("/updateEvent/:eventId", authenticateToken, UpdateEventData);
-router.post("/getEventList", authenticateToken, GetEventsList);
+router.post("/getEventList", GetEventsList);
 router.post("/deleteEvent/:eventId", authenticateToken, DeleteEvent);
 
 //Gallery module
