@@ -26,7 +26,6 @@ const storage = multer.diskStorage({
 
 // File filter to allow only specific types (images and videos)
 const fileFilter = (req, file, cb) => {
-  console.log("Uploaded file:", file); // Log the file details
   const fileTypes = /jpeg|jpg|png|gif|mp4|avi|mkv/;
   const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
   const mimeType = fileTypes.test(file.mimetype);
@@ -42,11 +41,8 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
 });
-
 const replaceFileIfExists = async (req, res, next) => {
   const id = req.body.id || req.params.id;
-  console.log("ID received:", id);
-  console.log("Uploaded File:", req.file);
 
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded." });
@@ -58,60 +54,59 @@ const replaceFileIfExists = async (req, res, next) => {
 
     // Read files in the uploads directory
     const files = await fs.readdir("uploads/");
-    console.log("Files in uploads directory:", files);
 
-    fs.readdir("uploads/", async (err, files) => {
-      if (err) return next(err);
+    // The new file is already saved by multer in the correct location
+    const newFilePath = `uploads/${req.file.filename}`;
 
-      // Filter files to find any that match the pattern
-      const existingFiles = files.filter((file) => file.includes(`-${id}-`));
+    const db = mongoose.connection.db;
+    const collections = await db.listCollections().toArray();
 
-      // Delete existing files
-      existingFiles.forEach((file) => {
-        fs.unlink(path.join("uploads/", file), (err) => {
-          if (err) console.error(`Error deleting file: ${file}`, err);
-        });
-      });
+    // Store promises for updates
+    const updatePromises = collections.map(async (collection) => {
+      const model = db.collection(collection.name);
+      const objectId = new mongoose.Types.ObjectId(id);
 
-      next();
+      const updatedPhoto = await model.findOneAndUpdate(
+        { _id: objectId },
+        { $set: { photo: newFilePath } }, // Update with new file path
+        { returnDocument: "after" } // Returns the updated document
+      );
 
-      // The new file is already saved by multer in the correct location
-      const newFilePath = `uploads/${req.file.filename}`;
-      console.log(`New file saved as: ${newFilePath}`);
-
-      const db = mongoose.connection.db;
-      const collections = await db.listCollections().toArray();
-
-      // Store promises for updates
-      const updatePromises = collections.map(async (collection) => {
-        const model = db.collection(collection.name);
-        const objectId = new mongoose.Types.ObjectId(id);
-
-        const updatedPhoto = await model.findOneAndUpdate(
-          { _id: objectId },
-          { $set: { photo: newFilePath } }, // Update with new file path
-          { new: true }
+      if (!updatedPhoto) {
+        console.warn(
+          `Document with ID ${id} not found in collection ${collection.name}`
         );
-
-        if (!updatedPhoto) {
-          console.warn(
-            `Document with ID ${id} not found in collection ${collection.name}`
-          );
-        }
-      });
-
-      await Promise.all(updatePromises);
-      console.log("All collections updated successfully");
-
-      res.status(200).json({
-        StatusCode: 200,
-        message: "Photos updated successfully.",
-        file: {
-          name: req.file.filename,
-          path: newFilePath,
-        },
-      });
+      }
     });
+
+    await Promise.all(updatePromises);
+
+    // Filter out the new file from the files array
+    const existingFiles = files.filter((file) => {
+      // Check if the file matches the current ID and is not the newly uploaded file
+      return file.includes(`-${id}-`) && file !== req.file.filename;
+    });
+
+    // Delete existing files
+    const deletePromises = existingFiles.map((file) =>
+      fs.unlink(path.join("uploads/", file)).catch((err) => {
+        console.error(`Error deleting file: ${file}`, err);
+      })
+    );
+
+    await Promise.all(deletePromises);
+
+    // Send response after all tasks are completed
+    res.status(200).json({
+      StatusCode: 200,
+      message: "Photos updated successfully.",
+      file: {
+        name: req.file.filename,
+        path: newFilePath,
+      },
+    });
+
+    // Do not call next() after sending the response
   } catch (err) {
     console.error("Error:", err);
     return res
