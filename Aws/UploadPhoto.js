@@ -57,7 +57,7 @@ const upload = multer({
 
 //   try {
 //     await ensureUploadsDir();
-//     const uploadsPath = "C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/";
+//     const uploadsPath = "uploads/";
 
 //     // Read files in the uploads directory
 //     const files = await fs.readdir(uploadsPath);
@@ -185,28 +185,22 @@ const replaceFileIfExists = async (req, res, next) => {
       );
     });
 
-    if (existingFiles.length === 0) {
-      return res.status(400).json({
-        StatusCode: 400,
-        message: "No existing files with the same extension to replace.",
-      });
+    // Delete existing files if they exist
+    if (existingFiles.length > 0) {
+      const deletePromises = existingFiles.map((file) =>
+        fs.unlink(path.join(uploadsDir, file)).catch((err) => {
+          console.error(`Error deleting file: ${file}`, err);
+        })
+      );
+      await Promise.all(deletePromises);
     }
-
-    // Delete existing files
-    const deletePromises = existingFiles.map((file) =>
-      fs.unlink(path.join(uploadsDir, file)).catch((err) => {
-        console.error(`Error deleting file: ${file}`, err);
-      })
-    );
-
-    await Promise.all(deletePromises);
 
     // Send response after all tasks are completed
     res.status(200).json({
       StatusCode: 200,
       message: isVideo
-        ? "Video updated successfully."
-        : "Photo updated successfully.",
+        ? "Video uploaded and updated successfully."
+        : "Photo uploaded and updated successfully.",
       file: {
         name: req.file.filename,
         path: newFilePath,
@@ -221,6 +215,7 @@ const replaceFileIfExists = async (req, res, next) => {
       .json({ message: err.message || "An error occurred" });
   }
 };
+
 const getPhoto = async (req, res) => {
   const id = req.params.id;
   const uploadsPath =
