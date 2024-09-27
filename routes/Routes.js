@@ -128,7 +128,7 @@ router.post(
 );
 router.post("/addCMS", authenticateToken, AddCMSData);
 router.post("/updateCMS/:CMDId", authenticateToken, UpdateCMSData);
-router.post("/getCMSList", authenticateToken, GetCMSList);
+router.post("/getCMSList", GetCMSList);
 // Route to upload a photo with an ID in the URL
 router.post(
   "/upload/:id",
