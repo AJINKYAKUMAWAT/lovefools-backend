@@ -61,6 +61,12 @@ const {
   UpdateContactData,
   GetContactList,
 } = require("../collection/ContactController");
+const {
+  AddFloorData,
+  DeleteFloor,
+  UpdateFloorData,
+  GetFloorList,
+} = require("../collection/FloorController");
 // const upload = multer({
 //   storage: storage,
 //   fileFilter: fileFilter,
@@ -82,6 +88,12 @@ router.post("/addTable", authenticateToken, AddTableData);
 router.post("/updateTable/:tableId", authenticateToken, UpdateTableData);
 router.post("/getTableList", authenticateToken, GetTablesList);
 router.post("/deleteTable/:tableId", authenticateToken, DeleteTable);
+
+//Floor module
+router.post("/addFloor", AddFloorData);
+router.post("/updateFloor/:floorId", UpdateFloorData);
+router.post("/getFloorList", GetFloorList);
+router.post("/deleteFloor/:floorId", DeleteFloor);
 
 //Table module
 router.post("/addUserInformation", authenticateToken, AddUserInformationData);
