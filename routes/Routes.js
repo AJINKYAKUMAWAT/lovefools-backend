@@ -84,16 +84,16 @@ router.post("/getReceiptList", authenticateToken, GetReceiptsList);
 router.post("/deleteReceipt/:receiptId", authenticateToken, DeleteReceipt);
 
 //Table module
-router.post("/addTable", AddTableData);
-router.post("/updateTable/:tableId", UpdateTableData);
-router.post("/getTableList", GetTablesList);
-router.post("/deleteTable/:tableId", DeleteTable);
+router.post("/addTable",authenticateToken, AddTableData);
+router.post("/updateTable/:tableId",authenticateToken, UpdateTableData);
+router.post("/getTableList",authenticateToken, GetTablesList);
+router.post("/deleteTable/:tableId",authenticateToken, DeleteTable);
 
 //Floor module
-router.post("/addFloor", AddFloorData);
-router.post("/updateFloor/:floorId", UpdateFloorData);
-router.post("/getFloorList", GetFloorList);
-router.post("/deleteFloor/:floorId", DeleteFloor);
+router.post("/addFloor",authenticateToken, AddFloorData);
+router.post("/updateFloor/:floorId",authenticateToken, UpdateFloorData);
+router.post("/getFloorList",authenticateToken, GetFloorList);
+router.post("/deleteFloor/:floorId",authenticateToken, DeleteFloor);
 
 //Table module
 router.post("/addUserInformation", authenticateToken, AddUserInformationData);

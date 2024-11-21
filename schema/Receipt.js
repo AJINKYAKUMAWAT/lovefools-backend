@@ -1,12 +1,13 @@
 const mongoose = require("mongoose");
 
 const ReceiptSchema = new mongoose.Schema({
-  receipt_Name: { type: String, required: true },
-  description: { type: String, required: true },
+  emailId: { type: String, required: true },
+  mobileNo: { type: String, required: true },
+  date: { type: Date, required: true }, // Consider changing to Number if appropriate
+  time: { type: String, required: true },
   price: { type: Number, required: true }, // Consider changing to Number if appropriate
   type: { type: String, required: true },
   sub_type: { type: String, required: true },
-  photo: { type: String },
   created_date: { type: Date, default: Date.now }, // Correct type and set default value
 });
 
