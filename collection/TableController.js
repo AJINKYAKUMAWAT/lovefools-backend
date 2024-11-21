@@ -12,7 +12,7 @@ const AddTableData = async (req, res) => {
     res.status(201).json({ StatusCode: 201, data: savedTable._id });
   } catch (error) {
     // Handle any errors during the process
-    res.status(500).json({ message: "Error adding receipt", esrror });
+    res.status(500).json({ message: "Error adding receipt", error });
   }
 };
 
@@ -53,10 +53,16 @@ const GetTablesList = async (req, res) => {
     const limit = parseInt(req.body.limit, 10) || 10;
     const page = parseInt(req.body.page, 10) || 1;
     const searchKey = req.body.search || "";
+    const floor_id = req.body.floor_id; // Assume `floor_id` is passed in the request body
 
-    const query = searchKey
-      ? { table_number: { $regex: searchKey, $options: "i" } }
-      : {};
+    // Construct the query
+    const query = {
+      ...(floor_id ? { floor_id: floor_id } : {}), // Filter by `floor_id` if provided
+      ...(searchKey
+        ? { table_number: { $regex: searchKey, $options: "i" } }
+        : {}),
+    };
+
     const totalTables = await TableSchema.countDocuments(query);
 
     const receipts = await TableSchema.find(query)
@@ -85,6 +91,7 @@ const GetTablesList = async (req, res) => {
     });
   }
 };
+
 
 const DeleteTable = async (req, res) => {
   try {
