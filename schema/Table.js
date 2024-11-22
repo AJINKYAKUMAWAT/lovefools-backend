@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const TableSchema = new mongoose.Schema({
   floor_id:{ type: String, required:true},
+  room_id:{ type: String, required:true},
   table_number: { type: String },
   seatCount: { type: String },
   description: { type: String },

@@ -63,7 +63,14 @@ const {
 } = require("../collection/ContactController");
 
 const {
+  AddRoomData,
+  DeleteRoom,
+  UpdateRoomData,
   GetRoomList,
+} = require("../collection/RoomController");
+
+const {
+  GetRoomsList,
 } = require("../collection/master/Booking");
 
 const {
@@ -89,14 +96,20 @@ router.post("/updateReceipt/:receiptId", authenticateToken, UpdateReceiptData);
 router.post("/getReceiptList", authenticateToken, GetReceiptsList);
 router.post("/deleteReceipt/:receiptId", authenticateToken, DeleteReceipt);
 
-//Rooms module
-router.post("/getRoomList", GetRoomList);
+//Rooms User module
+router.post("/getRoomList", GetRoomsList);
 
 //Menu module
 router.post("/addMenu", AddMenuData);
 router.post("/updateMenu/:menuId", UpdateMenuData);
 router.post("/getMenuList", GetMenuList);
 router.post("/deleteMenu/:menuId", DeleteMenu);
+
+//Menu module
+router.post("/addRoom", AddRoomData);
+router.post("/updateRoom/:roomId", UpdateRoomData);
+router.post("/getRoomList", GetRoomList);
+router.post("/deleteRoom/:roomId", DeleteRoom);
 
 //Table module
 router.post("/addTable",authenticateToken, AddTableData);

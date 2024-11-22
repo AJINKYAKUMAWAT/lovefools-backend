@@ -2,7 +2,7 @@ const ReceiptSchema = require("../../schema/Receipt");
 const FloorSchema = require("../../schema/Floor");
 const TableSchema = require("../../schema/Table");
 
-const GetRoomList = async (req, res) => {
+const GetRoomsList = async (req, res) => {
   try {
     const searchDate = req.body.date; // Expected to be in a valid date format
     const searchTime = req.body.time; // Expected to be in a valid time format
@@ -34,16 +34,20 @@ const GetRoomList = async (req, res) => {
 
     // Flatten the structure to create a list of all floor and table combinations
     const allCombinations = [];
-    allFloors.forEach((floor) => {
-      allTables.forEach((table) => {
-        allCombinations.push({
-          floor: floor.floor_name,
-          table: table.table_number,
-        });
-      });
-    });
+    // allFloors.forEach((floor) => {
+    //   allTables.forEach((table) => {
+    //     allCombinations.push({
+    //       floor: floor.floor_name,
+    //       table: table.table_number,
+    //     });
+    //   });
+    // });
 
-    console.log("allCombinations",allCombinations);
+    const tableFilter = allTables.filter((res)=>{
+      res.table_number === booked.table_number
+    })
+
+    console.log("findTable",booked);
     
 
     // Step 3: Filter out booked combinations
@@ -74,5 +78,5 @@ const GetRoomList = async (req, res) => {
 };
 
 module.exports = {
-  GetRoomList,
+  GetRoomsList,
 };
