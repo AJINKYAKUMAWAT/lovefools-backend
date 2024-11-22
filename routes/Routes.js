@@ -97,7 +97,7 @@ router.post("/getReceiptList", authenticateToken, GetReceiptsList);
 router.post("/deleteReceipt/:receiptId", authenticateToken, DeleteReceipt);
 
 //Rooms User module
-router.post("/getRoomList", GetRoomsList);
+router.post("/getRoomsList", GetRoomsList);
 
 //Menu module
 router.post("/addMenu", AddMenuData);
