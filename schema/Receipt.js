@@ -6,7 +6,7 @@ const ReceiptSchema = new mongoose.Schema({
   mobileNo: { type: String, required: true },
   floor: { type: String, required: true },
   room: { type: String, required: true },
-  seatCount: { type: String, required: true },
+  table_number: { type: String, required: true },
   date: { type: Date, required: true }, // Consider changing to Number if appropriate
   time: { type: String, required: true },
   price: { type: Number, required: true }, // Consider changing to Number if appropriate
