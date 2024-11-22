@@ -61,12 +61,18 @@ const {
   UpdateContactData,
   GetContactList,
 } = require("../collection/ContactController");
+
+const {
+  GetRoomList,
+} = require("../collection/master/Booking");
+
 const {
   AddFloorData,
   DeleteFloor,
   UpdateFloorData,
   GetFloorList,
 } = require("../collection/FloorController");
+const { AddMenuData, UpdateMenuData, GetMenuList, DeleteMenu } = require("../collection/MenuController");
 // const upload = multer({
 //   storage: storage,
 //   fileFilter: fileFilter,
@@ -82,6 +88,15 @@ router.post("/addReceipt", AddReceiptData);
 router.post("/updateReceipt/:receiptId", authenticateToken, UpdateReceiptData);
 router.post("/getReceiptList", authenticateToken, GetReceiptsList);
 router.post("/deleteReceipt/:receiptId", authenticateToken, DeleteReceipt);
+
+//Rooms module
+router.post("/getRoomList", GetRoomList);
+
+//Menu module
+router.post("/addMenu", AddMenuData);
+router.post("/updateMenu/:menuId", UpdateMenuData);
+router.post("/getMenuList", GetMenuList);
+router.post("/deleteMenu/:menuId", DeleteMenu);
 
 //Table module
 router.post("/addTable",authenticateToken, AddTableData);
