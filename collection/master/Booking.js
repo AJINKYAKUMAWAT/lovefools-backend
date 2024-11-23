@@ -49,8 +49,6 @@ const GetRoomsList = async (req, res) => {
             (table) => table.room?.toString() !== room._id.toString()
           );
 
-          console.log("roomTables",roomTables);
-          
 
           return {
             _id: room._id,
@@ -69,7 +67,7 @@ const GetRoomsList = async (req, res) => {
     // Step 6: Respond with the available floors, rooms, and tables
     res.status(200).json({
       statusCode: 200,
-      available: availableFloorData,
+      available: availableTables,
     });
   } catch (error) {
     // Log and respond with an error
