@@ -16,6 +16,7 @@ const {
   UpdateTableData,
   GetTablesList,
   DeleteTable,
+  CheckTablesList
 } = require("../collection/TableController");
 const {
   AddUserInformationData,
@@ -98,6 +99,7 @@ router.post("/deleteReceipt/:receiptId", authenticateToken, DeleteReceipt);
 
 //Rooms User module
 router.post("/getBookList", GetRoomsList);
+// router.post("/getCheckBookList", CheckTablesList);
 
 //Menu module
 router.post("/addMenu", AddMenuData);
@@ -117,11 +119,11 @@ router.post("/updateTable/:tableId",authenticateToken, UpdateTableData);
 router.post("/getTableList",authenticateToken, GetTablesList);
 router.post("/deleteTable/:tableId",authenticateToken, DeleteTable);
 
-//Floor module
-router.post("/addFloor",authenticateToken, AddFloorData);
-router.post("/updateFloor/:floorId",authenticateToken, UpdateFloorData);
-router.post("/getFloorList",authenticateToken, GetFloorList);
-router.post("/deleteFloor/:floorId",authenticateToken, DeleteFloor);
+// //Floor module
+// router.post("/addFloor",authenticateToken, AddFloorData);
+// router.post("/updateFloor/:floorId",authenticateToken, UpdateFloorData);
+// router.post("/getFloorList",authenticateToken, GetFloorList);
+// router.post("/deleteFloor/:floorId",authenticateToken, DeleteFloor);
 
 //Table module
 router.post("/addUserInformation", authenticateToken, AddUserInformationData);
