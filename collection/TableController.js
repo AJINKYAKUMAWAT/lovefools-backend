@@ -104,9 +104,7 @@ const CheckTablesList = async (req, res) => {
 
     // Construct the query
     const query = {
-      ...(floor_id ? { floor_id: floor_id } : {}), // Filter by `floor_id` if provided
-      ...(room_id ? { room_id: room_id } : {}), // Filter by `room_id` if provided
-      
+      ...(room_id ? { room_id: room_id } : {}), // Filter by `room_id` if provided      
     };    
 
     const receipts = await TableSchema.find(query)
