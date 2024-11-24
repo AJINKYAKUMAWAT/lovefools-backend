@@ -16,8 +16,8 @@ const GetRoomsList = async (req, res) => {
     const bookedReceipts = await ReceiptSchema.find({
       date: searchDate,
       time: searchTime,
-      room: roomID,
-    });
+      room: req.body.roomID,
+    });    
     // Step 2: Extract booked table numbers
     const bookedTableNumbers = bookedReceipts.map(
       (receipt) => receipt.table_number
@@ -25,7 +25,7 @@ const GetRoomsList = async (req, res) => {
 
     // Step 3: Retrieve all tables
     const allTables = await TableSchema.find({
-      room_id: roomID,
+      room_id: req.body.roomID,
     });
     // Step 4: If no bookings exist, return all tables as available
     if (bookedTableNumbers.length === 0) {
