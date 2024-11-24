@@ -48,31 +48,43 @@ const UpdateMenuData = async (req, res) => {
 
 const GetMenuList = async (req, res) => {
   try {
-    const sortBy = req.body.sortBy || "createdAt";
-    const sortOrder = parseInt(req.body.sortOrder, 10) || 1;
-    const limit = parseInt(req.body.limit, 10) || 10;
-    const page = parseInt(req.body.page, 10) || 1;
-    const searchKey = req.body.search || "";
+    // Extract request parameters with defaults
+    const {
+      sortBy = "createdAt",
+      sortOrder = 1,
+      limit = 10,
+      page = 1,
+      search = "",
+      Sub_Menu_Type = "",
+      Menu_Type = "",
+    } = req.body;
 
-    // If searchKey is provided, ensure an exact match for menuType
-    const query = searchKey
-      ? {
-		$or: [
-			{ subMenuType: { $regex: searchKey, $options: "i" } },
-			{ menuType: { $regex: searchKey, $options: "i" } },
-			{ menu_Name: { $regex: searchKey, $options: "i" } },
-		  ]
-        } // Exact match for menuType
-      : {};
+    // Construct the query
+    const query = {
+      ...(search && {
+        $or: [
+          { subMenuType: { $regex: search, $options: "i" } },
+          { menuType: { $regex: search, $options: "i" } },
+          { menu_Name: { $regex: search, $options: "i" } },
+        ],
+      }),
+      ...(Sub_Menu_Type && {
+        subMenuType: { $regex: Sub_Menu_Type, $options: "i" },
+      }),
+      ...(Menu_Type && { menuType: { $regex: Menu_Type, $options: "i" } }),
+    };
 
+    // Count total documents matching the query
     const totalEvents = await MenuSchema.countDocuments(query);
 
+    // Fetch paginated, sorted menu items
     const menu = await MenuSchema.find(query)
-      .collation({ locale: "en", strength: 2 }) // Ensures case-insensitive collation for sorting
+      .collation({ locale: "en", strength: 2 }) // Case-insensitive collation for sorting
       .sort({ [sortBy]: sortOrder })
       .skip((page - 1) * limit)
       .limit(limit);
 
+    // Respond with data and pagination details
     res.status(200).json({
       StatusCode: 200,
       data: menu,
@@ -85,6 +97,7 @@ const GetMenuList = async (req, res) => {
   } catch (error) {
     console.error("Error retrieving menu:", error);
 
+    // Respond with error details
     res.status(500).json({
       message: "Error retrieving menu",
       error: error.message || "Unknown error",
