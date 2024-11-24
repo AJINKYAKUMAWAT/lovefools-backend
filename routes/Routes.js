@@ -69,9 +69,7 @@ const {
   GetRoomList,
 } = require("../collection/RoomController");
 
-const {
-  GetRoomsList,
-} = require("../collection/master/Booking");
+const { GetRoomsList } = require("../collection/master/Booking");
 
 const {
   AddFloorData,
@@ -79,7 +77,12 @@ const {
   UpdateFloorData,
   GetFloorList,
 } = require("../collection/FloorController");
-const { AddMenuData, UpdateMenuData, GetMenuList, DeleteMenu } = require("../collection/MenuController");
+const {
+  AddMenuData,
+  UpdateMenuData,
+  GetMenuList,
+  DeleteMenu,
+} = require("../collection/MenuController");
 // const upload = multer({
 //   storage: storage,
 //   fileFilter: fileFilter,
@@ -112,16 +115,16 @@ router.post("/getRoomList", GetRoomList);
 router.post("/deleteRoom/:roomId", DeleteRoom);
 
 //Table module
-router.post("/addTable",authenticateToken, AddTableData);
-router.post("/updateTable/:tableId",authenticateToken, UpdateTableData);
-router.post("/getTableList",authenticateToken, GetTablesList);
-router.post("/deleteTable/:tableId",authenticateToken, DeleteTable);
+router.post("/addTable", authenticateToken, AddTableData);
+router.post("/updateTable/:tableId", authenticateToken, UpdateTableData);
+router.post("/getTableList", authenticateToken, GetTablesList);
+router.post("/deleteTable/:tableId", authenticateToken, DeleteTable);
 
 //Floor module
-router.post("/addFloor",authenticateToken, AddFloorData);
-router.post("/updateFloor/:floorId",authenticateToken, UpdateFloorData);
-router.post("/getFloorList",authenticateToken, GetFloorList);
-router.post("/deleteFloor/:floorId",authenticateToken, DeleteFloor);
+router.post("/addFloor", authenticateToken, AddFloorData);
+router.post("/updateFloor/:floorId", authenticateToken, UpdateFloorData);
+router.post("/getFloorList", authenticateToken, GetFloorList);
+router.post("/deleteFloor/:floorId", authenticateToken, DeleteFloor);
 
 //Table module
 router.post("/addUserInformation", authenticateToken, AddUserInformationData);
@@ -170,16 +173,9 @@ router.post("/addCMS", authenticateToken, AddCMSData);
 router.post("/updateCMS/:CMDId", authenticateToken, UpdateCMSData);
 router.post("/getCMSList", GetCMSList);
 // Route to upload a photo with an ID in the URL
-router.post(
-  "/upload/:id",
-  upload.single("file"), // Move this above replaceFileIfExists
-  replaceFileIfExists,
-  (req, res) => {
-    res.send("File uploaded successfully");
-  }
-);
+router.post("/upload/:id", upload.single("file"), replaceFileIfExists);
 
-router.get("/file/:id", getPhoto);
+router.get("/photo/:id", getPhoto);
 
 router.get("/getOrder", AddOrderData);
 router.get("/UpdateOrder", changeStatusOrder);

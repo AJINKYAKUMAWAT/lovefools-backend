@@ -3,7 +3,7 @@ const TableSchema = require("../../schema/Table");
 
 const GetRoomsList = async (req, res) => {
   try {
-    const { date: searchDate, time: searchTime } = req.body;
+    const { date: searchDate, time: searchTime, room: roomID } = req.body;
 
     // Check if date and time are provided
     if (!searchDate || !searchTime) {
@@ -16,14 +16,17 @@ const GetRoomsList = async (req, res) => {
     const bookedReceipts = await ReceiptSchema.find({
       date: searchDate,
       time: searchTime,
+      room: roomID,
     });
-
     // Step 2: Extract booked table numbers
-    const bookedTableNumbers = bookedReceipts.map((receipt) => receipt.table_number);
+    const bookedTableNumbers = bookedReceipts.map(
+      (receipt) => receipt.table_number
+    );
 
     // Step 3: Retrieve all tables
-    const allTables = await TableSchema.find();
-
+    const allTables = await TableSchema.find({
+      room_id: roomID,
+    });
     // Step 4: If no bookings exist, return all tables as available
     if (bookedTableNumbers.length === 0) {
       return res.status(200).json({
@@ -35,7 +38,10 @@ const GetRoomsList = async (req, res) => {
 
     // Step 5: Filter out booked tables
     const availableTables = allTables.filter(
-      (table) => !bookedTableNumbers.includes(table.table_number)
+      (table) =>
+        !bookedTableNumbers.some(
+          (bookedId) => bookedId.toString() === table._id.toString()
+        )
     );
 
     // Step 6: Respond with the available tables

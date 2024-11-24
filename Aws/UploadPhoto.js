@@ -1,27 +1,16 @@
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs").promises;
+const fsp = require("fs");
 const mongoose = require("mongoose");
-
-// Ensure uploads directory exists
-const ensureUploadsDir = async () => {
-  try {
-    await fs.mkdir(
-      "C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads",
-      { recursive: true }
-    );
-  } catch (err) {
-    console.error("Error creating uploads directory:", err);
-  }
-};
+const AWS = require("aws-sdk");
 
 // Define storage
+
+const s3 = new AWS.S3();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(
-      null,
-      "C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/"
-    ); // Path to store files
+    cb(null, "./uploads/"); // Path to store files
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
@@ -48,68 +37,6 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-// const replaceFileIfExists = async (req, res, next) => {
-//   const id = req.body.id || req.params.id;
-
-//   if (!req.file) {
-//     return res.status(400).json({ message: "No file uploaded." });
-//   }
-
-//   try {
-//     await ensureUploadsDir();
-//     const uploadsPath = "uploads/";
-
-//     // Read files in the uploads directory
-//     const files = await fs.readdir(uploadsPath);
-
-//     // Filter files to find any that match the pattern
-//     const existingFiles = files.filter((file) => file.includes(`-${id}-`));
-
-//     // Delete existing files
-//     const deletePromises = existingFiles.map((file) => fs.unlink(path.join(uploadsPath, file)));
-//     await Promise.all(deletePromises);
-
-//     next();
-
-//     // The new file is already saved by multer in the correct location
-//     const newFilePath = `uploads/${req.file.filename}`;
-
-//     const db = mongoose.connection.db;
-//     const collections = await db.listCollections().toArray();
-
-//     // Store promises for updates
-//     const updatePromises = collections.map(async (collection) => {
-//       const model = db.collection(collection.name);
-//       const objectId = new mongoose.Types.ObjectId(id);
-
-//       const updatedPhoto = await model.findOneAndUpdate(
-//         { _id: objectId },
-//         { $set: { photo: newFilePath } }, // Update with new file path
-//         { new: true }
-//       );
-
-//       if (!updatedPhoto) {
-//         console.warn(`Document with ID ${id} not found in collection ${collection.name}`);
-//       }
-//     });
-
-//     await Promise.all(updatePromises);
-//     console.log("All collections updated successfully");
-
-//     res.status(200).json({
-//       StatusCode: 200,
-//       message: "Photos updated successfully.",
-//       file: {
-//         name: req.file.filename,
-//         path: newFilePath,
-//       },
-//     });
-//   } catch (err) {
-//     console.error("Error:", err);
-//     return res.status(500).json({ message: err.message || "An error occurred" });
-//   }
-// };
-
 // Utility function to extract file extension
 const getFileExtension = (filename) => {
   return filename.split(".").pop().toLowerCase(); // Get the part after the last dot and make it lowercase
@@ -123,46 +50,30 @@ const isVideoFile = (extension) => {
 
 const replaceFileIfExists = async (req, res, next) => {
   const id = req.body.id || req.params.id;
-
+  console.log(id);
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded." });
   }
 
   try {
-    // Ensure uploads directory exists
-    await ensureUploadsDir();
-
-    // Path to your uploads directory
-    const uploadsDir =
-      "C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/";
-
-    // Read files in the uploads directory
-    const files = await fs.readdir(uploadsDir);
-
-    // Extract the extension of the new file
-    const newFileExtension = getFileExtension(req.file.filename);
-    const newFilePath = `${uploadsDir}${req.file.filename}`;
-
-    // Determine if the new file is a video
-    const isVideo = isVideoFile(newFileExtension);
+    const isVideo = isVideoFile(getFileExtension(req.file.originalname));
+    const uploadResult = await uploadFileToS3(req.file, id, isVideo);
 
     const db = mongoose.connection.db;
     const collections = await db.listCollections().toArray();
 
-    // Store promises for updates
     const updatePromises = collections.map(async (collection) => {
       const model = db.collection(collection.name);
       const objectId = new mongoose.Types.ObjectId(id);
 
-      // Set the appropriate field based on whether the file is a video
       const fieldToUpdate = isVideo
-        ? { video: newFilePath }
-        : { photo: newFilePath };
+        ? { video: uploadResult.location }
+        : { photo: uploadResult.location };
 
       const updatedPhoto = await model.findOneAndUpdate(
         { _id: objectId },
-        { $set: fieldToUpdate }, // Update with the correct field (video or photo)
-        { returnDocument: "after" } // Returns the updated document
+        { $set: fieldToUpdate },
+        { returnDocument: "after" }
       );
 
       if (!updatedPhoto) {
@@ -174,75 +85,84 @@ const replaceFileIfExists = async (req, res, next) => {
 
     await Promise.all(updatePromises);
 
-    // Filter out the new file from the files array and ensure the extension matches
-    const existingFiles = files.filter((file) => {
-      // Check if the file matches the current ID and is not the newly uploaded file
-      const existingFileExtension = getFileExtension(file);
-      return (
-        file.includes(`-${id}-`) &&
-        file !== req.file.filename &&
-        existingFileExtension === newFileExtension // Ensure extensions match
-      );
-    });
-
-    // Delete existing files if they exist
-    if (existingFiles.length > 0) {
-      const deletePromises = existingFiles.map((file) =>
-        fs.unlink(path.join(uploadsDir, file)).catch((err) => {
-          console.error(`Error deleting file: ${file}`, err);
-        })
-      );
-      await Promise.all(deletePromises);
-    }
-
-    // Send response after all tasks are completed
     res.status(200).json({
       StatusCode: 200,
       message: isVideo
         ? "Video uploaded and updated successfully."
         : "Photo uploaded and updated successfully.",
       file: {
-        name: req.file.filename,
-        path: newFilePath,
+        name: req.file.originalname,
+        s3Path: uploadResult.location,
       },
     });
-
-    // Do not call next() after sending the response
   } catch (err) {
-    console.error("Error:", err);
-    return res
-      .status(500)
-      .json({ message: err.message || "An error occurred" });
+    console.error("Error replacing file:", err);
+    return res.status(500).json({ message: "An error occurred", err });
   }
 };
 
 const getPhoto = async (req, res) => {
   const id = req.params.id;
-  const uploadsPath =
-    "C:/Users/Ajinkya/OneDrive/Desktop/projects/Lovefools/lovefools-user_panel/public/uploads/";
 
   try {
-    const files = await fs.readdir(uploadsPath);
-    const matchedFiles = files.filter((file) => file.includes(`-${id}-`));
+    const db = mongoose.connection.db;
+    const collections = await db.listCollections().toArray();
 
-    if (matchedFiles.length === 0) {
+    let fileUrl = null;
+    for (const collection of collections) {
+      const model = db.collection(collection.name);
+      const objectId = new mongoose.Types.ObjectId(id);
+
+      const document = await model.findOne({ _id: objectId });
+      if (document && (document.photo || document.video)) {
+        fileUrl = document.photo || document.video;
+        break;
+      }
+    }
+
+    if (!fileUrl) {
       return res.status(404).json({ message: "File not found" });
     }
 
-    const fileToSend = path.join(uploadsPath, matchedFiles[0]);
     res.json({
-      message: "File retrieved successfully",
-      filePath: fileToSend,
+      message: "File URL retrieved successfully",
+      fileUrl,
     });
   } catch (err) {
-    console.error("Error reading directory:", err);
-    return res.status(500).json({ message: "Unable to read directory" });
+    console.error("Error retrieving file:", err);
+    return res.status(500).json({ message: "Unable to retrieve file" });
+  }
+};
+
+const uploadFileToS3 = async (file, id, isVideo) => {
+  const s3Key = `uploads/${id}-${path.extname(file.originalname)}`;
+  console.log(file, "file");
+  const fileContent = fsp.readFileSync(file.path);
+  const params = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: s3Key,
+    Body: fileContent,
+    ContentType: file.mimetype,
+    ACL: "public-read",
+  };
+
+  try {
+    const uploadResult = await s3.upload(params).promise();
+    console.log("File uploaded to S3:", uploadResult.Location);
+    return {
+      location: uploadResult.Location,
+      key: uploadResult.Key,
+    };
+  } catch (err) {
+    console.error("Error uploading to S3:", err);
+    throw err;
   }
 };
 
 // Export the upload middleware and replacement function
 module.exports = {
   upload,
+  s3,
   replaceFileIfExists,
   getPhoto,
 };
