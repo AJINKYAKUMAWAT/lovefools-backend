@@ -102,8 +102,8 @@ router.get("/protected", TokenVerification);
 
 //Receipt module
 router.post("/addReceipt", AddReceiptData);
-router.post("/updateReceipt/:receiptId", authenticateToken, UpdateReceiptData);
-router.post("/getReceiptList", authenticateToken, GetReceiptsList);
+router.post("/updateReceipt/:receiptId", UpdateReceiptData);
+router.post("/getReceiptList", GetReceiptsList);
 router.post("/deleteReceipt/:receiptId", authenticateToken, DeleteReceipt);
 
 //Rooms User module
