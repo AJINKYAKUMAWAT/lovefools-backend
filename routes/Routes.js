@@ -84,6 +84,12 @@ const {
   GetMenuList,
   DeleteMenu,
 } = require("../collection/MenuController");
+const {
+  AddUpcomingEventData,
+  UpdateUpcomingEventData,
+  GetUpcomingEventsList,
+  DeleteUpcomingEvent,
+} = require("../collection/upcomingEvent");
 // const upload = multer({
 //   storage: storage,
 //   fileFilter: fileFilter,
@@ -186,6 +192,19 @@ router.post("/addContact", AddContactData);
 router.post("/updateContact/:ContactId", authenticateToken, UpdateContactData);
 router.post("/getContactList", authenticateToken, GetContactList);
 router.post("/deleteContact/:ContactId", authenticateToken, DeleteContact);
+
+router.post("/addUpComingEvent", authenticateToken, AddUpcomingEventData);
+router.post(
+  "/updateUpComingEvent/:eventId",
+  authenticateToken,
+  UpdateUpcomingEventData
+);
+router.post("/getUpComingEventList", GetUpcomingEventsList);
+router.post(
+  "/deleteUpComingEvent/:eventId",
+  authenticateToken,
+  DeleteUpcomingEvent
+);
 
 // router.post("/upload", upload.single("photo"), (req, res) => {
 //   res.send("File uploaded successfully to " + req.file.location);
