@@ -7,18 +7,22 @@ const AWS = require("aws-sdk");
 
 // Define storage
 
+const s3Bucket = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
 const s3 = new AWS.S3();
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./uploads/"); // Path to store files
-  },
+  s3: s3Bucket,
+  bucket: process.env.AWS_BUCKET_NAME,
+  acl: "public-read",
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
     const id = req.body.id || req.params.id;
-    cb(null, file.fieldname + "-" + id + "-" + Date.now() + ext); // Create file name with ID
+    cb(null, file.fieldname + "-" + id + "-" + Date.now() + ext); // Create file name with ID
   },
 });
-
 // File filter to allow only specific types (images and videos)
 const fileFilter = (req, file, cb) => {
   const fileTypes = /jpeg|jpg|png|gif|mp4|avi|mkv/;
@@ -159,10 +163,37 @@ const uploadFileToS3 = async (file, id, isVideo) => {
   }
 };
 
+const DeleteImg = async (req, res) => {
+  const bucketName = process.env.AWS_BUCKET_NAME; // Replace with your S3 bucket name
+  const key = `uploads/${req.body.PhotoUrl}`; // Include folder and file extension
+
+  if (!key) {
+    return res
+      .status(400)
+      .json({ error: "Key is required to delete the file." });
+  }
+
+  const params = {
+    Bucket: bucketName,
+    Key: key, // Full path to the object
+  };
+
+  try {
+    await s3.deleteObject(params).promise();
+    res.status(200).json({ message: "File deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to delete file.", details: error.message });
+  }
+};
+
 // Export the upload middleware and replacement function
 module.exports = {
   upload,
   s3,
+  DeleteImg,
   replaceFileIfExists,
   getPhoto,
 };
