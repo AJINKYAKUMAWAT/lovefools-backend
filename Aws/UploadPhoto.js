@@ -55,6 +55,9 @@ const replaceFileIfExists = async (req, res, next) => {
     return res.status(400).json({ message: "No file uploaded." });
   }
 
+  console.log(id);
+  
+
   try {
     const isVideo = isVideoFile(getFileExtension(req.file.originalname));
     const uploadResult = await uploadFileToS3(req.file, id, isVideo);
