@@ -201,13 +201,13 @@ router.post("/deleteContact/:ContactId", authenticateToken, DeleteContact);
 
 router.post("/addUpComingEvent", authenticateToken, AddUpcomingEventData);
 router.post(
-  "/updateUpComingEvent/:eventId",
+  "/updateUpComingEvent/:upcomingEventID",
   authenticateToken,
   UpdateUpcomingEventData
 );
 router.post("/getUpComingEventList", GetUpcomingEventsList);
 router.post(
-  "/deleteUpComingEvent/:eventId",
+  "/deleteUpComingEvent/:upcomingEventID",
   authenticateToken,
   DeleteUpcomingEvent
 );
