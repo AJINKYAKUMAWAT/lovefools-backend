@@ -10,4 +10,4 @@ const EventEnquirySchema = new mongoose.Schema({
 });
 
 // Export the model correctly
-module.exports = mongoose.model("UpcomingEvent", EventEnquirySchema);
+module.exports = mongoose.model("EventEnquiry", EventEnquirySchema);
