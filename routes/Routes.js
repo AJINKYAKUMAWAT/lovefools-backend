@@ -96,6 +96,14 @@ const {
   DeleteUpcomingEvent,
 } = require("../collection/upcomingEvent");
 
+const {
+  AddEventEnquiryData,
+  UpdateEventEnquiryData,
+  GetEventEnquiryList,
+  DeleteEventEnquiry,
+} = require("../collection/EventEnquiry");
+
+
 // const upload = multer({
 //   storage: storage,
 //   fileFilter: fileFilter,
@@ -111,6 +119,12 @@ router.post("/addReceipt", AddReceiptData);
 router.post("/updateReceipt/:receiptId", UpdateReceiptData);
 router.post("/getReceiptList", GetReceiptsList);
 router.post("/deleteReceipt/:receiptId", authenticateToken, DeleteReceipt);
+
+//Enquiry module
+router.post("/addEnquiry", AddEventEnquiryData);
+router.post("/updateEnquiry/:EventEnquiryID", UpdateEventEnquiryData);
+router.post("/getEnquiry", GetEventEnquiryList);
+router.post("/deleteEnquiry/:EventEnquiryID", DeleteEventEnquiry);
 
 //Rooms User module
 router.post("/getBookList", GetRoomsList);
