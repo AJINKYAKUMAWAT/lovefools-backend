@@ -5,7 +5,7 @@ const EventSchema = new mongoose.Schema({
   description: { type: String, required: true },
   date: { type: Date, required: true }, // Consider changing to Number if appropriate
   time: { type: String, required: true },
-  status: { type: String, required: true },
+  status: { type: String},
   photo: { type: String },
   created_date: { type: Date, default: Date.now }, // Correct type and set default value
 });

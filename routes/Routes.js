@@ -103,7 +103,6 @@ const {
   DeleteEventEnquiry,
 } = require("../collection/EventEnquiry");
 
-
 // const upload = multer({
 //   storage: storage,
 //   fileFilter: fileFilter,
@@ -118,7 +117,7 @@ router.get("/protected", TokenVerification);
 router.post("/addReceipt", AddReceiptData);
 router.post("/updateReceipt/:receiptId", UpdateReceiptData);
 router.post("/getReceiptList", GetReceiptsList);
-router.post("/deleteReceipt/:receiptId", authenticateToken, DeleteReceipt);
+router.post("/deleteReceipt/:receiptId", DeleteReceipt);
 
 //Enquiry module
 router.post("/addEnquiry", AddEventEnquiryData);
@@ -143,62 +142,62 @@ router.post("/getRoomList", GetRoomList);
 router.post("/deleteRoom/:roomId", DeleteRoom);
 
 //Table module
-router.post("/addTable", authenticateToken, AddTableData);
-router.post("/updateTable/:tableId", authenticateToken, UpdateTableData);
-router.post("/getTableList", authenticateToken, GetTablesList);
-router.post("/deleteTable/:tableId", authenticateToken, DeleteTable);
+router.post("/addTable", AddTableData);
+router.post("/updateTable/:tableId", UpdateTableData);
+router.post("/getTableList", GetTablesList);
+router.post("/deleteTable/:tableId", DeleteTable);
 
 // //Floor module
-// router.post("/addFloor",authenticateToken, AddFloorData);
-// router.post("/updateFloor/:floorId",authenticateToken, UpdateFloorData);
-// router.post("/getFloorList",authenticateToken, GetFloorList);
-// router.post("/deleteFloor/:floorId",authenticateToken, DeleteFloor);
+// router.post("/addFloor", AddFloorData);
+// router.post("/updateFloor/:floorId", UpdateFloorData);
+// router.post("/getFloorList", GetFloorList);
+// router.post("/deleteFloor/:floorId", DeleteFloor);
 
 //Table module
-router.post("/addUserInformation", authenticateToken, AddUserInformationData);
+router.post("/addUserInformation", AddUserInformationData);
 router.post(
   "/updateUserInformation/:userId",
-  authenticateToken,
+
   UpdateUserInformationData
 );
 router.post(
   "/getUserInformationList",
-  authenticateToken,
+
   GetUserInformationList
 );
 router.post(
   "/deleteUserInformation/:userId",
-  authenticateToken,
+
   DeleteUserInformation
 );
 
 //Table module
-router.post("/addEvent", authenticateToken, AddEventData);
-router.post("/updateEvent/:eventId", authenticateToken, UpdateEventData);
+router.post("/addEvent", AddEventData);
+router.post("/updateEvent/:eventId", UpdateEventData);
 router.post("/getEventList", GetEventsList);
-router.post("/deleteEvent/:eventId", authenticateToken, DeleteEvent);
+router.post("/deleteEvent/:eventId", DeleteEvent);
 
 //Gallery module
-router.post("/addGallery", authenticateToken, AddGalleryData);
-router.post("/updateGallery/:galleryId", authenticateToken, UpdateGalleryData);
-router.post("/getGalleryList", authenticateToken, GetGalleryList);
-router.post("/deleteGallery/:galleryId", authenticateToken, DeleteGallery);
+router.post("/addGallery", AddGalleryData);
+router.post("/updateGallery/:galleryId", UpdateGalleryData);
+router.post("/getGalleryList", GetGalleryList);
+router.post("/deleteGallery/:galleryId", DeleteGallery);
 
 //Testimonial module
-router.post("/addTestimonial", authenticateToken, AddTestimonialData);
+router.post("/addTestimonial", AddTestimonialData);
 router.post(
   "/updateTestimonial/:testimonialId",
-  authenticateToken,
+
   UpdateTestimonialData
 );
 router.post("/getTestimonialList", GetTestimonialList);
 router.post(
   "/deleteTestimonial/:testimonialId",
-  authenticateToken,
+
   DeleteTestimonial
 );
-router.post("/addCMS", authenticateToken, AddCMSData);
-router.post("/updateCMS/:CMDId", authenticateToken, UpdateCMSData);
+router.post("/addCMS", AddCMSData);
+router.post("/updateCMS/:CMDId", UpdateCMSData);
 router.post("/getCMSList", GetCMSList);
 // Route to upload a photo with an ID in the URL
 router.post("/upload/:id", upload.single("file"), replaceFileIfExists);
@@ -209,20 +208,20 @@ router.get("/getOrder", AddOrderData);
 router.get("/UpdateOrder", changeStatusOrder);
 
 router.post("/addContact", AddContactData);
-router.post("/updateContact/:ContactId", authenticateToken, UpdateContactData);
-router.post("/getContactList", authenticateToken, GetContactList);
-router.post("/deleteContact/:ContactId", authenticateToken, DeleteContact);
+router.post("/updateContact/:ContactId", UpdateContactData);
+router.post("/getContactList", GetContactList);
+router.post("/deleteContact/:ContactId", DeleteContact);
 
-router.post("/addUpComingEvent", authenticateToken, AddUpcomingEventData);
+router.post("/addUpComingEvent", AddUpcomingEventData);
 router.post(
   "/updateUpComingEvent/:upcomingEventID",
-  authenticateToken,
+
   UpdateUpcomingEventData
 );
 router.post("/getUpComingEventList", GetUpcomingEventsList);
 router.post(
   "/deleteUpComingEvent/:upcomingEventID",
-  authenticateToken,
+
   DeleteUpcomingEvent
 );
 router.post("/delete-image", DeleteImg);

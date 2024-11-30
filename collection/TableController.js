@@ -51,19 +51,38 @@ const GetTablesList = async (req, res) => {
   try {
     const sortBy = req.body.sortBy || "createdAt";
     const sortOrder = parseInt(req.body.sortOrder, 10) || 1;
-    const limit = parseInt(req.body.limit, 10) || 10;
-    const page = parseInt(req.body.page, 10) || 1;
+    const limit = req.body.limit ? parseInt(req.body.limit, 10) : 10;
+    const page = req.body.page ? parseInt(req.body.page, 10) : 1;
     const searchKey = req.body.search || "";
-    const room_id = req.body.room_id; // Assume `floor_id` is passed in the request body
+    const room_id = req.body.room_id; // Assume `room_id` is passed in the request body
+    const fetchAll = req.body.fetchAll || false; // If fetchAll is true, get all tables
 
     // Construct the query
     const query = {
       ...(room_id ? { room_id: room_id } : {}), // Filter by `room_id` if provided
-      ...(searchKey
+      ...(searchKey && searchKey !== "All" // If searchKey is "All", don't filter by table_number
         ? { table_number: { $regex: searchKey, $options: "i" } }
         : {}),
     };
 
+    // If fetchAll is true, we don't need pagination (limit and page don't apply)
+    if (fetchAll) {
+      const allTables = await TableSchema.find(query)
+        .collation({ locale: "en", strength: 2 })
+        .sort({ [sortBy]: sortOrder });
+
+      return res.status(200).json({
+        StatusCode: 200,
+        data: allTables,
+        pageData: {
+          total: allTables.length,
+          page: 1,
+          limit: allTables.length,
+        },
+      });
+    }
+
+    // Count total documents for pagination
     const totalTables = await TableSchema.countDocuments(query);
 
     const receipts = await TableSchema.find(query)
@@ -83,15 +102,16 @@ const GetTablesList = async (req, res) => {
     });
   } catch (error) {
     // Log the error for debugging
-    console.error("Error retrieving receipts:", error);
+    console.error("Error retrieving tables:", error);
 
     // Respond with a detailed error message
     res.status(500).json({
-      message: "Error retrieving receipts",
+      message: "Error retrieving tables",
       error: error.message || "Unknown error",
     });
   }
 };
+
 
 const CheckTablesList = async (req, res) => {
   try {

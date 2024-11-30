@@ -55,7 +55,7 @@ const GetContactList = async (req, res) => {
     const searchKey = req.body.search || "";
 
     const query = searchKey
-      ? { contact_number: { $regex: searchKey, $options: "i" } }
+      ? { mobile_number: { $regex: searchKey, $options: "i" } }
       : {};
     const totalContact = await ContactSchema.countDocuments(query);
 

@@ -54,8 +54,16 @@ const GetReceiptsList = async (req, res) => {
     const page = parseInt(req.body.page, 10) || 1;
     const searchKey = req.body.search || "";
 
+    // Fields allowed for searching
+    const searchableFields = ["emailId", "receiptName", "menuName", "status"];
+
+    // Create the query object for searching
     const query = searchKey
-      ? { emailId: { $regex: searchKey, $options: "i" } }
+      ? {
+          $or: searchableFields.map((field) => ({
+            [field]: { $regex: searchKey, $options: "i" }, // Case-insensitive regex
+          })),
+        }
       : {};
     const totalReceipts = await ReceiptSchema.countDocuments(query);
 
