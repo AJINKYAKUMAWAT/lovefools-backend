@@ -4,9 +4,9 @@ const fs = require("fs").promises;
 const fsp = require("fs");
 const mongoose = require("mongoose");
 const AWS = require("aws-sdk");
-
 // Define storage
 
+const AWS_BUCKET_NAME="the-lovefools"
 const s3Bucket = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -15,7 +15,7 @@ const s3Bucket = new AWS.S3({
 const s3 = new AWS.S3();
 const storage = multer.diskStorage({
   s3: s3Bucket,
-  bucket: process.env.AWS_BUCKET_NAME,
+  bucket: AWS_BUCKET_NAME,
   acl: "public-read",
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
@@ -146,7 +146,7 @@ const uploadFileToS3 = async (file, id, isVideo) => {
   console.log(file, "file");
   const fileContent = fsp.readFileSync(file.path);
   const params = {
-    Bucket: process.env.AWS_BUCKET_NAME,
+    Bucket: AWS_BUCKET_NAME,
     Key: s3Key,
     Body: fileContent,
     ContentType: file.mimetype,
@@ -167,7 +167,7 @@ const uploadFileToS3 = async (file, id, isVideo) => {
 };
 
 const DeleteImg = async (req, res) => {
-  const bucketName = process.env.AWS_BUCKET_NAME; // Replace with your S3 bucket name
+  const bucketName = AWS_BUCKET_NAME; // Replace with your S3 bucket name
   const key = `uploads/${req.body.PhotoUrl}`; // Include folder and file extension
 
   if (!key) {
