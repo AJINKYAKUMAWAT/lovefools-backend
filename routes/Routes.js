@@ -94,7 +94,7 @@ const {
   UpdateUpcomingEventData,
   GetUpcomingEventsList,
   DeleteUpcomingEvent,
-} = require("../collection/upcomingEvent");
+} = require("../collection/UpcomingEvent");
 
 const {
   AddEventEnquiryData,
