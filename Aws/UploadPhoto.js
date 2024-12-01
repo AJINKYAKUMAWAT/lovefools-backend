@@ -91,7 +91,7 @@ const replaceFileIfExists = async (req, res, next) => {
     });
 
     await Promise.all(updatePromises);
-
+    res.setHeader('Cache-Control', 'no-store, max-age=0');
     res.status(200).json({
       StatusCode: 200,
       message: isVideo
