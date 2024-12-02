@@ -176,16 +176,36 @@ const DeleteImg = async (req, res) => {
       .json({ error: "Key is required to delete the file." });
   }
 
-  const params = {
-    Bucket: bucketName,
-    Key: key, // Full path to the object
-  };
-
   try {
-    await s3.deleteObject(params).promise();
-    res.status(200).json({ message: "File deleted successfully." });
+    // List all versions of the object
+    const listParams = {
+      Bucket: bucketName,
+      Prefix: key,
+    };
+
+    const versions = await s3.listObjectVersions(listParams).promise();
+
+    if (versions.Versions.length === 0) {
+      return res.status(404).json({ error: "File not found." });
+    }
+
+    // Prepare delete requests for all versions
+    const deleteParams = {
+      Bucket: bucketName,
+      Delete: {
+        Objects: versions.Versions.map((version) => ({
+          Key: version.Key,
+          VersionId: version.VersionId,
+        })),
+      },
+    };
+
+    // Delete all versions
+    await s3.deleteObjects(deleteParams).promise();
+
+    res.status(200).json({ message: "File permanently deleted." });
   } catch (error) {
-    console.error("Error deleting file:", error);
+    console.error("Error permanently deleting file:", error);
     res
       .status(500)
       .json({ error: "Failed to delete file.", details: error.message });
