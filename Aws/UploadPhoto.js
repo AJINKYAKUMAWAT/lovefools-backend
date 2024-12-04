@@ -73,9 +73,12 @@ const replaceFileIfExists = async (req, res, next) => {
       const model = db.collection(collection.name);
       const objectId = new mongoose.Types.ObjectId(id);
 
+      const uploadFileFilter =uploadResult?.location.split('uploads/')
+      console.log("uploadResult",uploadFileFilter[1])
+
       const fieldToUpdate = isVideo
-        ? { video: uploadResult.location }
-        : { photo: uploadResult.location };
+        ? { video: uploadFileFilter[1] }
+        : { photo: uploadFileFilter[1] };
 
       const updatedPhoto = await model.findOneAndUpdate(
         { _id: objectId },
