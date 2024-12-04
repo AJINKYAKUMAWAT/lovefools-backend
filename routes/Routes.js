@@ -36,6 +36,7 @@ const {
   UpdateGalleryData,
   GetGalleryList,
   DeleteGallery,
+  GetGalleryListByUser
 } = require("../collection/GalleryController");
 const {
   AddTestimonialData,
@@ -182,6 +183,8 @@ router.post("/addGallery", AddGalleryData);
 router.post("/updateGallery/:galleryId", UpdateGalleryData);
 router.post("/getGalleryList", GetGalleryList);
 router.post("/deleteGallery/:galleryId", DeleteGallery);
+router.post("/getGalleryListByUser", GetGalleryListByUser);
+
 
 //Testimonial module
 router.post("/addTestimonial", AddTestimonialData);

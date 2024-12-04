@@ -46,6 +46,30 @@ const UpdateGalleryData = async (req, res) => {
   }
 };
 
+const GetGalleryListByUser = async (req, res) => {
+  try {
+  
+
+    const events = await GallerySchema.find({})
+
+    res.status(200).json({
+      StatusCode: 200,
+      data: events,
+      
+    });
+  } catch (error) {
+    // Log the error for debugging
+    console.error("Error retrieving events:", error);
+
+    // Respond with a detailed error message
+    res.status(500).json({
+      message: "Error retrieving events",
+      error: error.message || "Unknown error",
+    });
+  }
+};
+
+
 const GetGalleryList = async (req, res) => {
   try {
     const sortBy = req.body.sortBy || "createdAt";
@@ -128,4 +152,5 @@ module.exports = {
   UpdateGalleryData,
   GetGalleryList,
   DeleteGallery,
+  GetGalleryListByUser
 };
