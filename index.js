@@ -5,6 +5,8 @@ require("dotenv").config();
 require("./dbconfig/dbConfig");
 
 const app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 app.use(
   cors({
     origin: "*", // replace with the frontend's URL

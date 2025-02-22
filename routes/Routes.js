@@ -62,6 +62,13 @@ const {
   AddOrderData,
   changeStatusOrder,
 } = require("../collection/OrderController");
+
+const {
+  InitiatePayment,
+  InitiatePaymentRefund,
+  HandlePaymentresponse
+} = require("../collection/PaymentController");
+
 const {
   AddContactData,
   DeleteContact,
@@ -119,6 +126,11 @@ router.post("/addReceipt", AddReceiptData);
 router.post("/updateReceipt/:receiptId", UpdateReceiptData);
 router.post("/getReceiptList", GetReceiptsList);
 router.post("/deleteReceipt/:receiptId", DeleteReceipt);
+
+//Payment module
+router.post("/initiatePayment", InitiatePayment);
+router.post("/handlePaymentResponse", HandlePaymentresponse);
+router.post("/initiateRefund", InitiatePaymentRefund);
 
 //Enquiry module
 router.post("/addEnquiry", AddEventEnquiryData);
