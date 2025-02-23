@@ -27,7 +27,7 @@ class SimpleLoggerS3 {
 
   async uploadLogToS3() {
     try {
-      const fileName = `uploads/log_${Date.now()}.log`; // Save logs in "uploads/" folder
+      const fileName = `logs/log_${Date.now()}.log`; // Save logs in "uploads/" folder
       const command = new PutObjectCommand({
         Bucket: this.bucketName,
         Key: fileName,
