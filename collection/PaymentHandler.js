@@ -3,6 +3,7 @@ const https = require("https");
 const { EOL } = require("os");
 const path = require("path");
 const crypto = require("crypto");
+const { SimpleLoggerS3 } = require("./SimpleLogger");
 
 class SimpleLogger {
   disableLogging = false;
@@ -82,7 +83,7 @@ class PaymentHandler {
     if (PaymentHandler.paymentHandlerInstance !== undefined)
       return PaymentHandler.paymentHandlerInstance;
     this.paymentConfigs = undefined;
-    const configPath = userSpecifiedConfigPath || "config.json";
+    const configPath = path.resolve(__dirname, "config.json");
     try {
       const config = fs.readFileSync(configPath, "utf-8");
       this.paymentConfigs = JSON.parse(config);
@@ -94,7 +95,8 @@ class PaymentHandler {
       throw new TypeError("Failed to find/read config file");
     }
     this.validatePaymentConfigs();
-    this.logger = new SimpleLogger(this.getLoggingPath());
+    // this.logger = new SimpleLogger(this.getLoggingPath());
+    this.logger = new SimpleLoggerS3(this.getLoggingPath());
     this.logger.disableLogging = !this.getEnableLogging();
     PaymentHandler.paymentHandlerInstance = this;
     return PaymentHandler.paymentHandlerInstance;
