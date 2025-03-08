@@ -4,13 +4,18 @@ const {
     validateHMAC_SHA256,
   } = require("./PaymentHandler");
   const crypto = require("crypto");
+  const multer = require('multer')
 
+  const upload = multer(); // Middleware for parsing FormData
 
+  
 
 const InitiatePayment = async (req, res) => {
+  await new Promise((resolve) => upload.any()(req, res, resolve)); // Parse FormData
+
     const orderId = `order_${Date.now()}`;
-    const amount = 1 + crypto.randomInt(100);
-    const returnUrl = `${req.protocol}://${req.hostname}:https://lovefools-user-panel.vercel.app/handlePaymentResponse`;
+    const amount = req.body.amount;
+    const returnUrl = `https://lovefools-user-panel.vercel.app/booking`;
     const paymentHandler = PaymentHandler.getInstance();
     try {
       const orderSessionResp = await paymentHandler.orderSession({
@@ -24,7 +29,12 @@ const InitiatePayment = async (req, res) => {
         // PaymentHandler will read it from config.json file
         // payment_page_client_id: paymentHandler.getPaymentPageClientId()
       });
-      return res.redirect(orderSessionResp.payment_links.web);
+      res.status(200).json({
+        StatusCode: 200,
+        redict_url: orderSessionResp.payment_links.web,
+        
+      });
+      // return res.redirect(orderSessionResp.payment_links.web);
     } catch (error) {
       // [MERCHANT_TODO]:- please handle errors
       if (error instanceof APIException) {
@@ -49,7 +59,9 @@ const HandlePaymentresponse = async(req, res) => {
         validateHMAC_SHA256(req.body, paymentHandler.getResponseKey()) === false
       ) {
         // [MERCHANT_TODO]:- validation failed, it's critical error
-        return res.send("Signature verification failed");
+        return window.location.href = "http://localhost:3000/booking"
+      //  return res.sendFile(path.join(__dirname, "index.html"))
+        // return res.redirect("/payment-failed")
       }
   
       const orderStatus = orderStatusResp.status;

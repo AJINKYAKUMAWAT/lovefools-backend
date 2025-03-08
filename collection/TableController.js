@@ -134,7 +134,6 @@ const CheckTablesList = async (req, res) => {
       })
 
       const getNewList = [...bookFiltered, ...receipts];
-      console.log("getNewList", getNewList);
     
     
       

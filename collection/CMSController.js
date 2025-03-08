@@ -20,7 +20,6 @@ const UpdateCMSData = async (req, res) => {
   try {
     const CMDId = req.params.CMDId;
 
-    console.log(req.params);
 
     // Check if CMDId is provided
     if (!CMDId) {

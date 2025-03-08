@@ -35,7 +35,6 @@ class SimpleLoggerS3 {
         ContentType: "text/plain",
       });
       await this.s3.send(command);
-      console.log(`Log uploaded to S3: ${fileName}`);
       this.logBuffer = "";
     } catch (error) {
       console.error("Error uploading log to S3:", error);

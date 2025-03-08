@@ -54,12 +54,10 @@ const isVideoFile = (extension) => {
 
 const replaceFileIfExists = async (req, res, next) => {
   const id = req.body.id || req.params.id;
-  console.log(id);
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded." });
   }
 
-  console.log(id);
   
 
   try {
@@ -74,7 +72,6 @@ const replaceFileIfExists = async (req, res, next) => {
       const objectId = new mongoose.Types.ObjectId(id);
 
       const uploadFileFilter =uploadResult?.location.split('uploads/')
-      console.log("uploadResult",uploadFileFilter[1])
 
       const fieldToUpdate = isVideo
         ? { video: uploadFileFilter[1] }
@@ -146,7 +143,6 @@ const getPhoto = async (req, res) => {
 
 const uploadFileToS3 = async (file, id, isVideo) => {
   const s3Key = `uploads/${id}-${path.extname(file.originalname)}`;
-  console.log(file, "file");
   const fileContent = fsp.readFileSync(file.path);
   const params = {
     Bucket: AWS_BUCKET_NAME,
@@ -158,7 +154,6 @@ const uploadFileToS3 = async (file, id, isVideo) => {
 
   try {
     const uploadResult = await s3.upload(params).promise();
-    console.log("File uploaded to S3:", uploadResult.Location);
     return {
       location: uploadResult.Location,
       key: uploadResult.Key,
