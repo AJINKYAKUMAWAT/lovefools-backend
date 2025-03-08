@@ -59,7 +59,7 @@ const HandlePaymentresponse = async(req, res) => {
         validateHMAC_SHA256(req.body, paymentHandler.getResponseKey()) === false
       ) {
         // [MERCHANT_TODO]:- validation failed, it's critical error
-        return window.location.href = "http://localhost:3000/booking"
+        return window.location.href = "https://lovefools-user-panel.vercel.app/booking"
       //  return res.sendFile(path.join(__dirname, "index.html"))
         // return res.redirect("/payment-failed")
       }
