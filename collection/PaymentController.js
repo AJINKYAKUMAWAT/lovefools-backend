@@ -3,9 +3,7 @@ const {
   APIException,
   validateHMAC_SHA256,
 } = require("./PaymentHandler");
-const crypto = require("crypto");
 const multer = require("multer");
-const axios = require("axios");
 const ReceiptSchema = require("../schema/Receipt");
 
 const upload = multer(); // Middleware for parsing FormData
