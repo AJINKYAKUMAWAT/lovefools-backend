@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const ReceiptSchema = new mongoose.Schema({
+  orderId:{ type: String, required: true },
   receiptName: { type: String, required: true },
   emailId: { type: String, required: true },
   mobileNo: { type: String, required: true },
