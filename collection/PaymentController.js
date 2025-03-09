@@ -57,9 +57,7 @@ const HandlePaymentresponse = async (req, res) => {
     if (!validateHMAC_SHA256(req.body, paymentHandler.getResponseKey())) {
       const deletedReceipt = await ReceiptSchema.findOneAndDelete({ orderId: orderId });
     
-      if (deletedReceipt) {
-        return res.status(404).json({ StatusCode: 404, message: "Receipt not found" });
-      }
+      return res.redirect("http://localhost:3000/booking");
     }
 
     const orderStatus = orderStatusResp.status;
