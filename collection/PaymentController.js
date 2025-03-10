@@ -61,7 +61,7 @@ const HandlePaymentresponse = async (req, res) => {
 
     const orderStatus = orderStatusResp.status;
     if (orderStatus) {
-      return res.redirect("https://thelovefools.in/booking");
+      return res.redirect("https://thelovefools.in/order-success");
     }
     // let message = "";
     // switch (orderStatus) {
