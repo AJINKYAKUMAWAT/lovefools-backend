@@ -13,7 +13,7 @@ const InitiatePayment = async (req, res) => {
 
   const orderId = `order_${Date.now()}`;
   const amount = req.body.amount;
-  const returnUrl = `http://localhost:5000/api/user/handlePaymentResponse`;
+  const returnUrl = `https://lovefools-backend.vercel.app/api/user/handlePaymentResponse`;
   const paymentHandler = PaymentHandler.getInstance();
   try {
     const orderSessionResp = await paymentHandler.orderSession({
@@ -53,16 +53,15 @@ const HandlePaymentresponse = async (req, res) => {
 
   try {
     const orderStatusResp = await paymentHandler.orderStatus(orderId);
-    console.log("orderId",orderId)
     if (!validateHMAC_SHA256(req.body, paymentHandler.getResponseKey())) {
       const deletedReceipt = await ReceiptSchema.findOneAndDelete({ orderId: orderId });
     
-      return res.redirect("http://localhost:3000/booking");
+      return res.redirect("https://thelovefools.in/booking");
     }
 
     const orderStatus = orderStatusResp.status;
     if (orderStatus) {
-      return res.redirect("http://localhost:3000/booking");
+      return res.redirect("https://thelovefools.in/booking");
     }
     // let message = "";
     // switch (orderStatus) {
@@ -102,58 +101,6 @@ const HandlePaymentresponse = async (req, res) => {
     return res.send("Something went wrong");
   }
 };
-
-// const HandlePaymentresponse = async (req, res) => {
-//   const orderId = req.body.order_id || req.body.orderId;
-//   const paymentHandler = PaymentHandler.getInstance();
-
-//   if (!orderId) {
-//     return res.send("Something went wrong");
-//   }
-
-//   try {
-//     const orderStatusResp = await paymentHandler.orderStatus(orderId);
-//     console.log("orderId:", orderId);
-
-//     const isValidHMAC = await validateHMAC_SHA256(req.body, paymentHandler.getResponseKey());
-//     if (!isValidHMAC) {
-//       const receipt = await ReceiptSchema.findOne({ orderId: orderId });
-//       console.log("Receipt found before deletion:", receipt);
-
-//       if (!receipt) {
-//         console.log("No matching receipt found for orderId:", orderId);
-//         return res.status(404).json({ StatusCode: 404, message: "Receipt not found" });
-//       }
-
-//       const deletedReceipt = await ReceiptSchema.findOneAndDelete({ order_id: orderId });
-//       console.log("Deleted receipt:", deletedReceipt);
-
-//       if (!deletedReceipt) {
-//         return res.status(404).json({ StatusCode: 404, message: "Receipt not found" });
-//       }
-//     }
-
-//     if (orderStatusResp.status) {
-//       return res.redirect("http://localhost:3000/booking");
-//     }
-
-//     const html = makeOrderStatusResponse(
-//       "Merchant Payment Response Page",
-//       message,
-//       req,
-//       orderStatusResp
-//     );
-//     res.set("Content-Type", "text/html");
-//     return res.send(html);
-//   } catch (error) {
-//     console.error(error);
-//     if (error instanceof APIException) {
-//       return res.send("PaymentHandler threw some error");
-//     }
-//     return res.send("Something went wrong");
-//   }
-// };
-
 
 const InitiatePaymentRefund = async () => {
   const paymentHandler = PaymentHandler.getInstance();
