@@ -16,6 +16,7 @@ const GetRoomsList = async (req, res) => {
     const bookedReceipts = await ReceiptSchema.find({
       date: searchDate,
       time: searchTime,
+      paymentSuccess:true,
       room: req.body.roomID,
     });    
     // Step 2: Extract booked table numbers
