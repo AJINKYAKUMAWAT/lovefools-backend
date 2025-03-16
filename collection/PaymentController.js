@@ -54,35 +54,22 @@ const HandlePaymentresponse = async (req, res) => {
   try {
     const orderStatusResp = await paymentHandler.orderStatus(orderId);
     if (!validateHMAC_SHA256(req.body, paymentHandler.getResponseKey())) {
-      const deletedReceipt = await ReceiptSchema.findOneAndDelete({ orderId: orderId });
-    
+      const deletedReceipt = await ReceiptSchema.findOneAndDelete({
+        orderId: orderId,
+      });
+
       return res.redirect("https://thelovefools.in/booking");
     }
 
     const orderStatus = orderStatusResp.status;
     if (orderStatus) {
+      await ReceiptSchema.findOneAndUpdate(
+        { orderId },
+        { paymentSuccess: true }
+      );
       return res.redirect("https://thelovefools.in/order-success");
     }
-    // let message = "";
-    // switch (orderStatus) {
-    //   case "CHARGED":
-    //     message = "order payment done successfully";
-    //     break;
-    //   case "PENDING":
-    //   case "PENDING_VBV":
-    //     message = "order payment pending";
-    //     break;
-    //   case "AUTHORIZATION_FAILED":
-    //     message = "order payment authorization failed";
-    //     break;
-    //   case "AUTHENTICATION_FAILED":
-    //     message = "order payment authentication failed";
-    //     break;
-    //   default:
-    //     message = "order status " + orderStatus;
-    //     break;
-    // }
-
+   
     const html = makeOrderStatusResponse(
       "Merchant Payment Response Page",
       message,
