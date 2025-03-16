@@ -49,7 +49,7 @@ const UpdateReceiptData = async (req, res) => {
 const GetReceiptsList = async (req, res) => {
   try {
     const sortBy = req.body.sortBy || "createdAt";
-    const sortOrder = parseInt(req.body.sortOrder, 10) || -1;
+    const sortOrder = parseInt(req.body.sortOrder, 10) || 1;
     const limit = parseInt(req.body.limit, 10) || 10;
     const page = parseInt(req.body.page, 10) || 1;
     const searchKey = req.body.search || "";
