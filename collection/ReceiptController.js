@@ -58,13 +58,15 @@ const GetReceiptsList = async (req, res) => {
     const searchableFields = ["emailId", "receiptName", "menuName", "status"];
 
     // Create the query object for searching
-    const query = searchKey
-      ? {
-          $or: searchableFields.map((field) => ({
-            [field]: { $regex: searchKey, $options: "i" }, // Case-insensitive regex
-          })),
-        }
-      : {};
+    const query = {
+      paymentSuccess: true, // Only get receipts where paymentSuccess is true
+      ...(searchKey && {
+        $or: searchableFields.map((field) => ({
+          [field]: { $regex: searchKey, $options: "i" }, // Case-insensitive regex
+        })),
+      }),
+    };
+
     const totalReceipts = await ReceiptSchema.countDocuments(query);
 
     const receipts = await ReceiptSchema.find(query)
@@ -83,16 +85,14 @@ const GetReceiptsList = async (req, res) => {
       },
     });
   } catch (error) {
-    // Log the error for debugging
     console.error("Error retrieving receipts:", error);
-
-    // Respond with a detailed error message
     res.status(500).json({
       message: "Error retrieving receipts",
       error: error.message || "Unknown error",
     });
   }
 };
+
 
 const DeleteReceipt = async (req, res) => {
   try {
