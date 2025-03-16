@@ -20,8 +20,8 @@ app.use(bodyParser.json());
 // Import User routes
 const userRoutes = require("./routes/Routes");
 const CustomerRoutes = require("./routes/Routes");
-app.use("/api/user", userRoutes);
-app.use("/api/customer", CustomerRoutes);
+app.use("/user", userRoutes);
+app.use("/customer", CustomerRoutes);
 
 app.listen(5000, () => {
   console.log("This server is running on port 5000");
