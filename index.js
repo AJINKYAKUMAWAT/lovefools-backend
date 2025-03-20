@@ -23,6 +23,6 @@ const CustomerRoutes = require("./routes/Routes");
 app.use("/api/user", userRoutes);
 app.use("/api/customer", CustomerRoutes);
 
-app.listen(5000, () => {
+app.listen(5000, '0.0.0.0', () => {
   console.log("This server is running on port 5000");
 });
